@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Robot Soccer CAD Studio</title>
+<style>
+:root{--bg0:#070D17;--bg1:#0B1524;--sf:#101E33;--sf2:#16283F;--cyan:#35E0FF;--blue:#3D7BFF;--amber:#FFB020;--mag:#FF4FD8;--green:#52E5A3;--red:#FF5C5C;--violet:#8B7BFF;--cutOut:#FF6B4A;--cutIn:#4FA3FF;--tx:#E8F1FB;--mut:#93A7C4;--dim:#5F7492;--line:rgba(120,180,255,.14);--line2:rgba(120,180,255,.26);--mono:ui-monospace,Consolas,monospace;--sans:system-ui,sans-serif;--r:12px;--hdr:56px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg0);color:var(--tx);overflow:hidden}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--bg1)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--blue),var(--cyan));border-radius:6px;border:2px solid var(--bg1)}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select{font-family:inherit;color:var(--tx)}
+header{position:fixed;top:0;left:0;right:0;height:var(--hdr);z-index:50;display:flex;align-items:center;gap:14px;padding:0 16px;background:linear-gradient(180deg,rgba(16,30,51,.96),rgba(11,21,36,.92));border-bottom:1px solid var(--line)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--blue) 35%,var(--mag) 70%,var(--amber));opacity:.85}
+.logo{display:flex;align-items:center;gap:10px}
+.logo b{font-size:14px;letter-spacing:.06em}
+.logo small{display:block;font-size:9.5px;color:var(--mut);letter-spacing:.18em;text-transform:uppercase}
+.tabs{display:flex;gap:4px;margin-left:8px;background:var(--bg1);border:1px solid var(--line);border-radius:11px;padding:4px}
+.tabs button{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;color:var(--mut);transition:.18s}
+.tabs button.on{background:linear-gradient(135deg,rgba(53,224,255,.2),rgba(61,123,255,.25));color:var(--cyan);box-shadow:inset 0 0 0 1px rgba(53,224,255,.4)}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.rule-chip{font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:8px;border:1px solid var(--line2)}
+.rule-chip.ok{color:var(--green);border-color:rgba(82,229,163,.4);background:rgba(82,229,163,.08)}
+.rule-chip.bad{color:var(--red);border-color:rgba(255,92,92,.5);background:rgba(255,92,92,.1)}
+main{position:relative;margin-top:var(--hdr);height:calc(100vh - var(--hdr));display:flex}
+.module{display:none;flex:1;min-width:0}
+.module.active{display:flex}
+.panel{width:380px;flex:none;overflow-y:auto;padding:14px;border-right:1px solid var(--line);background:linear-gradient(180deg,rgba(16,30,51,.55),rgba(11,21,36,.3))}
+.stage{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.sec{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.sec-h{display:flex;align-items:center;gap:9px;padding:11px 13px;cursor:pointer;user-select:none;background:linear-gradient(90deg,rgba(53,224,255,.07),transparent)}
+.sec-h .n{width:21px;height:21px;flex:none;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;font-family:var(--mono);background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04101E}
+.sec-h b{font-size:12.5px;letter-spacing:.05em;text-transform:uppercase}
+.sec-h .car{margin-left:auto;color:var(--dim);transition:.2s;font-size:11px}
+.sec.closed .car{transform:rotate(-90deg)}
+.sec-b{padding:12px 13px 14px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line)}
+.sec.closed .sec-b{display:none}
+.ctl-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px}
+.ctl-top label{font-size:12px;color:var(--mut);font-weight:600}
+.ctl-top .unit{font-size:10px;color:var(--dim);font-family:var(--mono)}
+.ctl-row{display:flex;gap:9px;align-items:center}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan));opacity:.85}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-5.5px;border-radius:50%;background:var(--tx);border:3px solid var(--cyan)}
+input[type=range]::-moz-range-track{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--tx);border:3px solid var(--cyan)}
+input[type=number],select{background:var(--bg1);border:1px solid var(--line2);border-radius:8px;padding:7px 8px;font-size:13px;font-family:var(--mono)}
+input[type=number]{width:74px;text-align:right}
+select{width:100%;cursor:pointer}
+select option{background:var(--bg1)}
+.seg{display:flex;background:var(--bg1);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+.seg button{flex:1;padding:7px 6px;border-radius:7px;font-size:11.5px;font-weight:600;color:var(--mut);transition:.15s}
+.seg button.on{background:linear-gradient(135deg,rgba(53,224,255,.22),rgba(61,123,255,.28));color:var(--cyan);box-shadow:inset 0 0 0 1px rgba(53,224,255,.45)}
+.step{display:flex;align-items:center;gap:5px}
+.step button{width:28px;height:30px;border-radius:7px;background:var(--sf2);border:1px solid var(--line2);font-size:15px;font-weight:700;color:var(--cyan)}
+.swrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.swrow label{font-size:12px;color:var(--mut);font-weight:600}
+.switch{width:42px;height:23px;flex:none;border-radius:12px;background:var(--bg1);border:1px solid var(--line2);position:relative;transition:.2s}
+.switch i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--dim);transition:.2s}
+.switch[aria-checked=true]{background:linear-gradient(90deg,rgba(53,224,255,.35),rgba(61,123,255,.4));border-color:var(--cyan)}
+.switch[aria-checked=true] i{left:21px;background:var(--cyan)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:11px;padding:5px 9px;border-radius:7px;background:var(--bg1);border:1px solid var(--line);color:var(--mut)}
+.chip b{color:var(--cyan);font-weight:700}
+.chip.amber b{color:var(--amber)}.chip.green b{color:var(--green)}.chip.mag b{color:var(--mag)}
+.note{font-size:11px;color:var(--dim);line-height:1.55}
+.note b{color:var(--amber)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:10px;font-size:13px;font-weight:700;transition:.15s;border:1px solid transparent}
+.btn-cut{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04101E}
+.btn-combo{background:linear-gradient(135deg,var(--amber),var(--mag));color:#1A0A10}
+.btn-ghost{background:var(--sf2);border-color:var(--line2);color:var(--mut)}
+.btn-sm{padding:8px;font-size:12px}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.presets button{font-size:11px;padding:6px 10px;border-radius:20px;border:1px solid var(--line2);background:var(--bg1);color:var(--mut)}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.45;padding:7px 9px;border-radius:8px;background:var(--bg1);border:1px solid var(--line)}
+.chk i{flex:none;width:17px;height:17px;border-radius:5px;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:900;margin-top:1px}
+.chk.ok i{background:rgba(82,229,163,.18);color:var(--green)}.chk.ok{border-color:rgba(82,229,163,.22)}
+.chk.warn i{background:rgba(255,176,32,.18);color:var(--amber)}.chk.warn{border-color:rgba(255,176,32,.3)}
+.chk.bad i{background:rgba(255,92,92,.2);color:var(--red)}.chk.bad{border-color:rgba(255,92,92,.4)}
+.chk.info i{background:rgba(79,163,255,.18);color:var(--cutIn)}
+.audit{display:flex;flex-direction:column;gap:6px}
+.toolbar{display:flex;align-items:center;gap:8px;padding:10px 12px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:rgba(11,21,36,.6)}
+.toolbar .seg{flex:none}
+.toolbar .seg button{padding:6px 12px}
+.tbtn{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--line2);background:var(--sf);color:var(--mut)}
+.tbtn.on{color:var(--amber);border-color:var(--amber);background:rgba(255,176,32,.1)}
+.legend{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.lg{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mono);color:var(--mut)}
+.lg i{width:14px;height:0;border-top:2px solid}
+.lg.dash i{border-top-style:dashed}
+.stage-cv{flex:1;min-height:0;position:relative;cursor:crosshair;background:#050A14}
+.stage-cv canvas{display:block;position:absolute;inset:0;touch-action:none}
+.statusbar{display:flex;gap:16px;align-items:center;padding:7px 14px;border-top:1px solid var(--line);background:rgba(11,21,36,.75);font-family:var(--mono);font-size:11px;color:var(--mut);flex-wrap:wrap}
+.statusbar b{color:var(--cyan)}.statusbar .bad{color:var(--red)}.statusbar .ok{color:var(--green)}
+.statusbar .sp{margin-left:auto}
+.finder-list{display:flex;flex-direction:column;gap:7px;max-height:300px;overflow-y:auto;padding-right:3px}
+.opt{text-align:left;background:var(--bg1);border:1px solid var(--line);border-radius:9px;padding:9px 11px;transition:.15s;width:100%}
+.opt:hover{border-color:var(--cyan);background:var(--sf2)}
+.opt-h{display:flex;align-items:center;gap:8px}
+.opt-h b{font-family:var(--mono);font-size:13px;color:var(--tx)}
+.opt-h .stg{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:5px;background:rgba(139,123,255,.2);color:var(--violet)}
+.opt-h .err{margin-left:auto;font-family:var(--mono);font-size:11px}
+.err.g{color:var(--green)}.err.a{color:var(--amber)}.err.r{color:var(--red)}
+.opt-b{font-size:10.5px;color:var(--mut);font-family:var(--mono);margin-top:4px}
+.opt-bar{height:3px;border-radius:2px;background:var(--sf3);margin-top:6px;overflow:hidden}
+.opt-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:2px}
+.gcard{background:var(--bg1);border:1px solid var(--line);border-radius:10px;padding:11px;display:flex;flex-direction:column;gap:10px}
+.gcard-h{display:flex;align-items:center;gap:8px}
+.gcard-h .dot{width:9px;height:9px;border-radius:50%}
+.gcard-h b{font-size:12px;letter-spacing:.06em}
+.gcard-h .od{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--amber)}
+table.geo{width:100%;border-collapse:collapse;font-size:11.5px}
+table.geo th,table.geo td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--line)}
+table.geo th{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+table.geo td{font-family:var(--mono)}
+table.geo td:first-child{font-family:var(--sans);color:var(--mut)}
+table.geo .v1{color:var(--cyan)}table.geo .v2{color:var(--amber)}
+.drawer{position:fixed;left:50%;bottom:14px;transform:translate(-50%,140%);width:min(680px,calc(100vw - 24px));z-index:60;background:linear-gradient(180deg,var(--sf2),var(--sf));border:1px solid var(--line2);border-radius:14px;padding:14px 16px;transition:transform .35s}
+.drawer.show{transform:translate(-50%,0)}
+.drawer-h{display:flex;align-items:center;gap:10px}
+.drawer-h b{font-family:var(--mono);font-size:12.5px;word-break:break-all}
+.drawer-h small{display:block;color:var(--mut);font-size:10.5px;font-family:var(--mono);margin-top:2px}
+.drawer-h .x{margin-left:auto}
+.drawer-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.drawer-actions .btn{width:auto;flex:1;min-width:140px;padding:9px}
+.hide{display:none!important}
+.toasts{position:fixed;top:calc(var(--hdr) + 10px);right:12px;z-index:80;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;gap:10px;align-items:center;background:linear-gradient(135deg,var(--sf2),var(--sf));border:1px solid var(--line2);border-left:3px solid var(--cyan);border-radius:10px;padding:10px 14px;font-size:12.5px;max-width:320px;animation:tin .3s}
+.toast.ok{border-left-color:var(--green)}.toast.warn{border-left-color:var(--amber)}.toast.bad{border-left-color:var(--red)}
+.toast.out{animation:tout .3s forwards;opacity:0}
+@keyframes tin{from{transform:translateX(120%);opacity:0}}
+@keyframes tout{to{transform:translateX(120%);opacity:0}}
+@media (max-width:960px){body{overflow:auto}main{flex-direction:column;height:auto}.module.active{flex-direction:column}.stage{order:0;height:47vh;min-height:330px}.panel{order:1;width:100%;border-right:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div><b>🛞 ROBOT SOCCER CAD STUDIO</b><small>Velg · Ban Silikon · Involute Gear · DXF R12</small></div>
+  </div>
+  <nav class="tabs">
+    <button id="tabWheel" class="on">🛞 Velg & Ban</button>
+    <button id="tabGear">⚙️ Gear</button>
+  </nav>
+  <div class="hdr-right">
+    <span class="rule-chip ok" id="ruleChip">≤160 mm ✓</span>
+  </div>
+</header>
+
+<main>
+<section class="module active" id="modWheel">
+  <aside class="panel">
+    <div class="sec">
+      <div class="sec-h"><span class="n">1</span><b>Ban & Mold Silikon</b><span class="car">▼</span></div>
+      <div class="sec-b">
+        <div class="presets">
+          <button data-preset="optimal">★ Optimal 50×15</button>
+          <button data-preset="compact">Compact 40×12</button>
+          <button data-preset="grip">Grip 60×18</button>
+        </div>
+        <div class="ctl"><div class="ctl-top"><label>Diameter Luar Ban (OD)</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.tireOD" min="30" max="80" step="0.5"><input type="number" data-bind="wheel.tireOD" min="30" max="80" step="0.5"></div></div>
+        <div class="ctl"><div class="ctl-top"><label>Lebar Ban</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.tireW" min="8" max="25" step="0.5"><input type="number" data-bind="wheel.tireW" min="8" max="25" step="0.5"></div></div>
+        <div class="ctl"><div class="ctl-top"><label>Susut RTV</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.shrink" min="0" max="0.6" step="0.05"><input type="number" data-bind="wheel.shrink" min="0" max="0.6" step="0.05"></div></div>
+        <div class="ctl"><div class="ctl-top"><label>Kotak Mold</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.moldBox" min="45" max="95" step="1"><input type="number" data-bind="wheel.moldBox" min="45" max="95" step="1"></div></div>
+        <div class="ctl"><div class="ctl-top"><label>Lebar Chassis</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.chassis" min="60" max="150" step="1"><input type="number" data-bind="wheel.chassis" min="60" max="150" step="1"></div></div>
+        <div class="chips">
+          <span class="chip">ID Mold <b data-calc="moldID">–</b> mm</span>
+          <span class="chip amber">Dinding <b data-calc="wall">–</b> mm</span>
+          <span class="chip green">Lebar Robot <b data-calc="robotWidth">–</b> mm</span>
+        </div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><span class="n">2</span><b>Velg & Poros</b><span class="car">▼</span></div>
+      <div class="sec-b">
+        <div class="ctl"><div class="ctl-top"><label>OD Velg / Flensa</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.rimOD" min="25" max="65" step="0.5"><input type="number" data-bind="wheel.rimOD" min="25" max="65" step="0.5"></div></div>
+        <div class="ctl"><div class="ctl-top"><label>Undercut</label><span class="unit">mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.undercut" min="16" max="58" step="0.5"><input type="number" data-bind="wheel.undercut" min="16" max="58" step="0.5"></div></div>
+        <div class="ctl"><div class="ctl-top"><label>Posisi Lubang Kunci</label></div>
+          <div class="seg" data-bind="wheel.lockMode">
+            <button data-val="flange">Di Flensa</button>
+            <button data-val="body">Di Badan</button>
+          </div></div>
+        <div class="grid2">
+          <div class="ctl"><div class="ctl-top"><label>Jumlah Kunci</label></div>
+            <div class="step"><button data-inc="wheel.lockN" data-d="-1">−</button><input type="number" data-bind="wheel.lockN" min="3" max="12" step="1"><button data-inc="wheel.lockN" data-d="1">+</button></div></div>
+          <div class="ctl"><div class="ctl-top"><label>Ø Kunci</label><span class="unit">mm</span></div>
+            <input type="number" data-bind="wheel.lockD" min="1.2" max="4" step="0.1" style="width:100%"></div>
+        </div>
+        <div class="ctl"><div class="ctl-top"><label>Metode Rakit</label></div>
+          <div class="seg" data-bind="wheel.assembly">
+            <button data-val="glue">Lem + 2 Pin</button>
+            <button data-val="bolt">Baut</button>
+          </div></div>
+        <div id="boltBox" class="grid2 hide">
+          <div class="ctl"><div class="ctl-top"><label>Ukuran Baut</label></div>
+            <select data-bind="wheel.boltD" data-num><option value="2.2">M2 (Ø2.2)</option><option value="3.2">M3 (Ø3.2)</option></select></div>
+          <div class="ctl"><div class="ctl-top"><label>Jumlah Baut</label></div>
+            <div class="step"><button data-inc="wheel.boltN" data-d="-1">−</button><input type="number" data-bind="wheel.boltN" min="2" max="8" step="1"><button data-inc="wheel.boltN" data-d="1">+</button></div></div>
+          <div class="ctl" style="grid-column:1/-1"><div class="ctl-top"><label>PCD Baut</label><span class="unit">mm</span></div>
+            <div class="ctl-row"><input type="range" data-bind="wheel.boltPCD" min="12" max="34" step="0.5"><input type="number" data-bind="wheel.boltPCD" min="12" max="34" step="0.5"></div></div>
+        </div>
+        <div class="ctl"><div class="ctl-top"><label>Preset Poros</label></div>
+          <select data-bind="wheel.shaftPreset">
+            <option value="tt">TT Gearbox (Double-D 5.45×3.80)</option>
+            <option value="n20">N20 (Single-D 3.15×2.60)</option>
+            <option value="n30">N30 (Single-D 3.15×2.60)</option>
+            <option value="hex">Hub Hex (AF 7.0)</option>
+            <option value="custom">Custom</option>
+          </select></div>
+        <div class="ctl"><div class="ctl-top"><label>Profil Lubang Poros</label></div>
+          <div class="seg" data-bind="wheel.shaftProfile">
+            <button data-val="doubleD">Double-D</button><button data-val="singleD">Single-D</button>
+            <button data-val="round">Bulat</button><button data-val="hex">Heks</button>
+          </div></div>
+        <div class="grid2">
+          <div class="ctl"><div class="ctl-top"><label>Ø Poros</label><span class="unit">mm</span></div>
+            <input type="number" data-bind="wheel.shaftD" min="1" max="12" step="0.05" style="width:100%"></div>
+          <div class="ctl"><div class="ctl-top"><label>Lebar Flat</label><span class="unit">mm</span></div>
+            <input type="number" data-bind="wheel.shaftFlat" min="0.5" max="12" step="0.05" style="width:100%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><span class="n">3</span><b>Produksi & Kerf</b><span class="car">▼</span></div>
+      <div class="sec-b">
+        <div class="grid2">
+          <div class="ctl"><div class="ctl-top"><label>Set Velg</label></div>
+            <div class="step"><button data-inc="wheel.wheelSets" data-d="-1">−</button><input type="number" data-bind="wheel.wheelSets" min="1" max="8" step="1"><button data-inc="wheel.wheelSets" data-d="1">+</button></div></div>
+          <div class="ctl"><div class="ctl-top"><label>Tebal Akrilik</label></div>
+            <select data-bind="wheel.acrylic" data-num><option value="3">3.0 mm</option><option value="5">5.0 mm</option></select></div>
+        </div>
+        <div class="ctl"><div class="ctl-top"><label>Kerf / Ø Endmill</label><span class="unit">±<b data-calc="kerfHalf">0.000</b> mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="wheel.kerf" min="0" max="3" step="0.1"><input type="number" data-bind="wheel.kerf" min="0" max="3" step="0.1"></div>
+          <div class="presets" style="margin-top:6px">
+            <button data-kerf="wheel" data-v="0">0</button><button data-kerf="wheel" data-v="1">1.0</button><button data-kerf="wheel" data-v="1.5">1.5</button><button data-kerf="wheel" data-v="2">2.0</button>
+          </div></div>
+        <div class="chips">
+          <span class="chip">Keping <b data-calc="piecesTotal">–</b></span>
+          <span class="chip green">Silikon <b data-calc="siliconeVol">–</b> ml</span>
+          <span class="chip mag">Katalis <b data-calc="catalyst">–</b> gr</span>
+        </div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><span class="n">🧪</span><b>Audit Desain</b><span class="car">▼</span></div>
+      <div class="sec-b"><div class="audit" id="auditWheel"></div></div>
+    </div>
+    <button class="btn btn-cut" id="btnExpWheel">⬇️ Export DXF Velg & Mold</button>
+    <div style="height:8px"></div>
+    <button class="btn btn-ghost" id="btnResetWheel">🔄 Reset ke Optimal</button>
+  </aside>
+  <div class="stage">
+    <div class="toolbar">
+      <div class="seg" data-bind="wheel.view">
+        <button data-val="layout">📐 Layout A4</button>
+        <button data-val="assembly">🔍 Rakitan</button>
+      </div>
+      <button class="tbtn" id="wGuides">📏 Garis Bantu</button>
+      <button class="tbtn" id="wSim">▶ Putar</button>
+      <button class="tbtn" id="wReset">🎯 Reset</button>
+      <div class="legend">
+        <span class="lg"><i style="border-color:var(--cyan)"></i>NOMINAL</span>
+        <span class="lg dash"><i style="border-color:var(--cutOut)"></i>OUTER +K/2</span>
+        <span class="lg dash"><i style="border-color:var(--cutIn)"></i>INNER −K/2</span>
+      </div>
+    </div>
+    <div class="stage-cv"><canvas id="cvWheel"></canvas></div>
+    <div class="statusbar">
+      <span>ZOOM <b id="wZoom">–</b></span><span>XY <b id="wPos">0.0 , 0.0</b> mm</span>
+      <span class="sp" id="wInfo">–</span>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="modGear">
+  <aside class="panel">
+    <div class="sec">
+      <div class="sec-h"><span class="n">⚡</span><b>Pencari Kombinasi Gir</b><span class="car">▼</span></div>
+      <div class="sec-b">
+        <div class="ctl"><div class="ctl-top"><label>Preset Dinamo</label></div>
+          <select data-bind="gear.motor">
+            <option value="n20">N20 (10.000 RPM)</option>
+            <option value="n30s1">N30 1S (20.000 RPM)</option>
+            <option value="n30s2">N30 2S (38.000 RPM)</option>
+            <option value="c8520">Coreless 8520 (45.000 RPM)</option>
+          </select></div>
+        <div class="grid2">
+          <div class="ctl"><div class="ctl-top"><label>Target RPM</label></div>
+            <input type="number" data-bind="gear.targetRPM" min="100" max="6000" step="10" style="width:100%"></div>
+          <div class="ctl"><div class="ctl-top"><label>Module (M)</label></div>
+            <select data-bind="gear.module" data-num><option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.8">0.8</option><option value="1">1.0</option></select></div>
+        </div>
+        <div class="ctl"><div class="ctl-top"><label>Tuning</label></div>
+          <div class="seg" data-bind="gear.tune"><button data-val="torque">💪 Torsi</button><button data-val="balanced">⚖️ Balanced</button><button data-val="speed">⚡ Speed</button></div></div>
+        <div class="chips">
+          <span class="chip">Target <b data-calc="targetRatio">–</b></span>
+          <span class="chip amber">RPM <b data-calc="loadedRPM">–</b></span>
+          <span class="chip green">Speed <b data-calc="speed">–</b> m/s</span>
+        </div>
+        <button class="btn btn-cut btn-sm" id="btnFind">⚡ Cari Kombinasi</button>
+        <div class="finder-list" id="finderList"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><span class="n">⚙️</span><b>Editor Pinion & Spur</b><span class="car">▼</span></div>
+      <div class="sec-b">
+        <div class="grid2">
+          <div class="ctl"><div class="ctl-top"><label>Sudut Tekan</label></div>
+            <select data-bind="gear.pa" data-num><option value="14.5">14.5°</option><option value="20">20°</option><option value="25">25°</option></select></div>
+          <div class="ctl"><div class="ctl-top"><label>Rasio</label></div>
+            <div class="chip" style="text-align:center;padding:8px">1 : <b data-calc="ratioTotal">–</b></div></div>
+        </div>
+        <div class="gcard">
+          <div class="gcard-h"><span class="dot" style="background:var(--cyan)"></span><b>PINION (Z1)</b><span class="od">OD <span data-calc="od1">–</span> mm</span></div>
+          <div class="ctl"><div class="ctl-top"><label>Jumlah Gigi</label></div>
+            <div class="ctl-row"><input type="range" data-bind="gear.z1" min="6" max="40" step="1"><div class="step"><button data-inc="gear.z1" data-d="-1">−</button><input type="number" data-bind="gear.z1" min="6" max="40" step="1"><button data-inc="gear.z1" data-d="1">+</button></div></div></div>
+          <div class="ctl"><div class="ctl-top"><label>Lubang As</label><span class="unit">mm</span></div>
+            <input type="number" data-bind="gear.hole1" min="0.8" max="10" step="0.05" style="width:100%"></div>
+        </div>
+        <div class="gcard">
+          <div class="gcard-h"><span class="dot" style="background:var(--amber)"></span><b>SPUR (Z2)</b><span class="od">OD <span data-calc="od2">–</span> mm</span></div>
+          <div class="ctl"><div class="ctl-top"><label>Jumlah Gigi</label></div>
+            <div class="ctl-row"><input type="range" data-bind="gear.z2" min="12" max="160" step="1"><div class="step"><button data-inc="gear.z2" data-d="-1">−</button><input type="number" data-bind="gear.z2" min="12" max="160" step="1"><button data-inc="gear.z2" data-d="1">+</button></div></div></div>
+          <div class="ctl"><div class="ctl-top"><label>Lubang As</label><span class="unit">mm</span></div>
+            <input type="number" data-bind="gear.hole2" min="0.8" max="12" step="0.05" style="width:100%"></div>
+          <div class="grid2">
+            <div class="ctl"><div class="ctl-top"><label>Jml Baut</label></div>
+              <div class="step"><button data-inc="gear.boltN" data-d="-1">−</button><input type="number" data-bind="gear.boltN" min="0" max="8" step="1"><button data-inc="gear.boltN" data-d="1">+</button></div></div>
+            <div class="ctl"><div class="ctl-top"><label>PCD Baut</label><span class="unit">mm</span></div>
+              <input type="number" data-bind="gear.boltPCD" min="8" max="60" step="0.5" style="width:100%"></div>
+          </div>
+        </div>
+        <table class="geo"><thead><tr><th>Dimensi</th><th id="thA">Pinion</th><th id="thB">Spur</th></tr></thead><tbody id="geoBody"></tbody></table>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><span class="n">K</span><b>Kerf & Export</b><span class="car">▼</span></div>
+      <div class="sec-b">
+        <div class="ctl"><div class="ctl-top"><label>Kerf</label><span class="unit">±<b data-calc="gKerfHalf">0.000</b> mm</span></div>
+          <div class="ctl-row"><input type="range" data-bind="gear.kerf" min="0" max="3" step="0.1"><input type="number" data-bind="gear.kerf" min="0" max="3" step="0.1"></div></div>
+        <button class="btn btn-cut btn-sm" id="btnExpPair">⬇️ Export Sepasang Gear (.DXF)</button>
+        <button class="btn btn-ghost btn-sm" id="btnResetGear">🔄 Reset</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><span class="n">🧪</span><b>Audit Gear</b><span class="car">▼</span></div>
+      <div class="sec-b"><div class="audit" id="auditGear"></div></div>
+    </div>
+  </aside>
+  <div class="stage">
+    <div class="toolbar">
+      <div class="seg" data-bind="gear.view">
+        <button data-val="mesh">⚙️ Mesh</button>
+        <button data-val="pinion">Pinion</button>
+        <button data-val="spur">Spur</button>
+      </div>
+      <button class="tbtn" id="gGuides">📏 Garis Bantu</button>
+      <button class="tbtn" id="gSim">▶ Putar</button>
+      <button class="tbtn" id="gReset">🎯 Reset</button>
+    </div>
+    <div class="stage-cv"><canvas id="cvGear"></canvas></div>
+    <div class="statusbar">
+      <span>ZOOM <b id="gZoom">–</b></span><span>XY <b id="gPos">0.0 , 0.0</b> mm</span>
+      <span class="sp" id="gInfo">–</span>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="drawer" id="expDrawer">
+  <div class="drawer-h">
+    <div>📦</div>
+    <div><b id="expName">file.dxf</b><small id="expMeta">–</small></div>
+    <button class="tbtn x" id="expClose">✕</button>
+  </div>
+  <div class="drawer-actions">
+    <button class="btn btn-cut" id="btnDl">⬇️ Unduh DXF</button>
+    <button class="btn btn-ghost" id="btnCopy">📋 Salin Kode</button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+"use strict";
+try{
+/* ========== UTIL ========== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const clone=o=>JSON.parse(JSON.stringify(o));
+const getP=(o,p)=>p.split('.').reduce((a,k)=>a&&a[k],o);
+const setP=(o,p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((a,x)=>a[x],o)[l]=v;};
+const TAU=Math.PI*2,RAD=Math.PI/180;
+const fmt=(n,d=2)=>{const x=Number(n);return isFinite(x)?x.toFixed(d):'–';};
+
+/* ========== STATE ========== */
+const DEF={
+ wheel:{tireOD:50,tireW:15,shrink:0.2,moldBox:60,chassis:96,rimOD:39,undercut:32,
+  lockMode:'flange',lockN:6,lockD:2,assembly:'glue',boltD:2.2,boltN:4,boltPCD:24,
+  shaftPreset:'tt',shaftProfile:'doubleD',shaftD:5.45,shaftFlat:3.8,
+  wheelSets:4,moldSets:1,acrylic:3,kerf:0,view:'layout',guides:true,sim:false},
+ gear:{motor:'n30s1',targetRPM:1460,module:0.4,tune:'balanced',
+  pa:20,z1:8,z2:80,z3:10,z4:50,
+  hole1:1.0,hole2:5.45,hole3:3.15,hole4:5.45,
+  x1:0,x2:0,x3:0,x4:0,boltN:4,boltD:2.2,boltPCD:24,kerf:0,view:'mesh',guides:true,sim:false}
+};
+let S=clone(DEF);
+try{const raw=localStorage.getItem('rscad-v3');if(raw){const p=JSON.parse(raw);S.wheel={...DEF.wheel,...p.wheel};S.gear={...DEF.gear,...p.gear};}}catch(e){}
+S.wheel.sim=false;S.gear.sim=false;
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem('rscad-v3',JSON.stringify(S));}catch(e){}},400);}
+
+const SHAFTS={tt:['doubleD',5.45,3.8],n20:['singleD',3.15,2.6],n30:['singleD',3.15,2.6],hex:['hex',7,7]};
+const MOTORS={n20:{rpm:10000,shaft:3.0},n30s1:{rpm:20000,shaft:3.15},n30s2:{rpm:38000,shaft:3.15},c8520:{rpm:45000,shaft:1.0}};
+const LOAD=0.73;
+
+/* ========== TOAST ========== */
+function toast(msg,type='info'){
+ const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;
+ $('#toasts').appendChild(t);
+ setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),320);},3000);}
+
+/* ========== MATH ========== */
+const inv=a=>Math.tan(a)-a;
+function solveInv(target,a0){
+ let a=a0;
+ for(let i=0;i<30;i++){
+  const t=Math.tan(a),f=t-a-target,d=t*t;
+  if(d<1e-9)break;
+  const na=a-f/d;
+  if(!isFinite(na))return a0;
+  a=clamp(na,.05,1.3);
+  if(Math.abs(f)<1e-10)break;
+ }
+ return isFinite(a)?a:a0;
+}
+function signedArea(p){let s=0;for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];s+=a[0]*b[1]-b[0]*a[1];}return s/2;}
+function ccw(p){return signedArea(p)<0?p.slice().reverse():p;}
+function offsetPoly(pts,d){
+ if(!pts||pts.length<3)return pts||[];
+ const p=ccw(pts),n=p.length,out=[];
+ for(let i=0;i<n;i++){
+  const prev=p[(i-1+n)%n],cur=p[i],next=p[(i+1)%n];
+  let e1=[cur[0]-prev[0],cur[1]-prev[1]],e2=[next[0]-cur[0],next[1]-cur[1]];
+  const l1=Math.hypot(e1[0],e1[1])||1,l2=Math.hypot(e2[0],e2[1])||1;
+  const n1=[e1[1]/l1,-e1[0]/l1],n2=[e2[1]/l2,-e2[0]/l2];
+  let mx=n1[0]+n2[0],my=n1[1]+n2[1];const ml=Math.hypot(mx,my);
+  if(ml<1e-6){out.push([cur[0]+n1[0]*d,cur[1]+n1[1]*d]);continue;}
+  mx/=ml;my/=ml;
+  let dot=mx*n1[0]+my*n1[1];
+  if(Math.abs(dot)<.2)dot=Math.sign(dot||1)*.2;
+  const len=clamp(d/dot,-Math.abs(d)*5,Math.abs(d)*5);
+  out.push([cur[0]+mx*len,cur[1]+my*len]);
+ }
+ return out;
+}
+function arcPts(cx,cy,r,a1,a2,n){const out=[];for(let i=0;i<=n;i++){const a=a1+(a2-a1)*i/n;out.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}return out;}
+function circlePts(cx,cy,r,n=48){return arcPts(cx,cy,r,0,TAU,n).slice(0,n);}
+
+function shaftPoly(profile,D,flat){
+ const r=D/2;
+ if(profile==='round')return circlePts(0,0,r,48);
+ if(profile==='hex'){const R=flat/Math.sqrt(3),p=[];for(let i=0;i<6;i++){const a=i*TAU/6+TAU/12;p.push([R*Math.cos(a),R*Math.sin(a)]);}return p;}
+ if(profile==='singleD'){
+  const h=clamp(flat-r,-r*.95,r*.95);
+  const x0=Math.sqrt(Math.max(.01,r*r-h*h));
+  const th=Math.atan2(h,x0);
+  const p=[[x0,h],[-x0,h]];
+  p.push(...arcPts(0,0,r,Math.PI-th,TAU+th,30).slice(1));
+  return ccw(p);
+ }
+ // doubleD
+ const h=clamp(flat/2,r*.2,r*.95);
+ const y0=Math.sqrt(Math.max(.01,r*r-h*h));
+ const th=Math.atan2(y0,h);
+ const p=[[h,-y0],[h,y0]];
+ p.push(...arcPts(0,0,r,th,Math.PI-th,16).slice(1));
+ p.push([-h,-y0]);
+ p.push(...arcPts(0,0,r,Math.PI+th,TAU-th,16).slice(1));
+ return ccw(p);
+}
+
+function gearPoly(m,z,x,paDeg){
+ const pa=paDeg*RAD;
+ const rp=m*z/2;
+ const rb=rp*Math.cos(pa);
+ const ra=rp+m*(1+x);
+ const rf=Math.max(.2,rp-m*(1.25-x));
+ const psi=(Math.PI/2+2*x*Math.tan(pa))/z;
+ const ia=inv(pa);
+ const rStart=Math.max(rb,rf);
+ const aa=Math.acos(clamp(rb/ra,-1,1));
+ const tipOff=psi+ia-inv(aa);
+ const pts=[];
+ const NF=10;
+ for(let k=0;k<z;k++){
+  const tc=k*TAU/z;
+  const rootOff=psi+ia;
+  const aL=tc-rootOff,aR=tc+rootOff;
+  pts.push([rf*Math.cos(aL),rf*Math.sin(aL)]);
+  if(rf<rb-1e-6)pts.push([rb*Math.cos(aL),rb*Math.sin(aL)]);
+  for(let i=0;i<=NF;i++){
+   const r=rStart+(ra-rStart)*i/NF;
+   const ar=Math.acos(clamp(rb/r,-1,1));
+   const off=psi+ia-inv(ar);
+   const a=tc-off;
+   pts.push([r*Math.cos(a),r*Math.sin(a)]);
+  }
+  if(tipOff>1e-4){
+   for(let i=1;i<4;i++){const a=tc-tipOff+2*tipOff*i/4;pts.push([ra*Math.cos(a),ra*Math.sin(a)]);}
+  }
+  for(let i=NF;i>=0;i--){
+   const r=rStart+(ra-rStart)*i/NF;
+   const ar=Math.acos(clamp(rb/r,-1,1));
+   const off=psi+ia-inv(ar);
+   const a=tc+off;
+   pts.push([r*Math.cos(a),r*Math.sin(a)]);
+  }
+  if(rf<rb-1e-6)pts.push([rf*Math.cos(aR),rf*Math.sin(aR)]);
+  const nextL=tc+TAU/z-rootOff;
+  const gap=nextL-aR;
+  if(gap>1e-5)for(let i=1;i<3;i++){const a=aR+gap*i/3;pts.push([rf*Math.cos(a),rf*Math.sin(a)]);}
+ }
+ return {pts:ccw(pts),rp,rb,ra,rf,pcd:2*rp,od:2*ra,df:2*rf};
+}
+
+function makeGear(m,z,x,pa,hole){
+ const g=gearPoly(m,z,x,pa);
+ g.z=z;g.x=x;g.m=m;g.hole=hole;
+ return g;
+}
+
+/* ========== COMPUTE WHEEL ========== */
+let W={};
+function computeWheel(){
+ const w=S.wheel;
+ w.undercut=clamp(w.undercut,10,w.rimOD-3);
+ const moldID=w.tireOD+w.shrink;
+ const wall=(w.tireOD-w.rimOD)/2;
+ const robotWidth=w.chassis+2*w.tireW;
+ const Rlock=w.lockMode==='flange'?(w.rimOD+w.undercut)/4:Math.max(3,w.undercut/2-w.lockD/2-1.2);
+ const edge=w.lockMode==='flange'?w.rimOD/2:w.undercut/2;
+ const lip=edge-(Rlock+w.lockD/2);
+ const moldLayers=Math.max(1,Math.round(w.tireW/w.acrylic));
+ const moldStack=moldLayers*w.acrylic;
+ const stackH=3*w.acrylic;
+ const shaft={type:'poly',pts:shaftPoly(w.shaftProfile,w.shaftD,w.shaftFlat)};
+ const lockHoles=[];
+ for(let i=0;i<w.lockN;i++){const a=i*TAU/w.lockN;lockHoles.push({type:'circle',x:Rlock*Math.cos(a),y:Rlock*Math.sin(a),r:w.lockD/2});}
+ const asmHoles=[];
+ if(w.assembly==='glue'){asmHoles.push({type:'circle',x:11,y:0,r:1.5},{type:'circle',x:-11,y:0,r:1.5});}
+ else for(let i=0;i<w.boltN;i++){const a=i*TAU/w.boltN+TAU/12;asmHoles.push({type:'circle',x:w.boltPCD/2*Math.cos(a),y:w.boltPCD/2*Math.sin(a),r:w.boltD/2});}
+ const asmR=w.assembly==='glue'?12.5:w.boltPCD/2+w.boltD/2;
+ const flangeHoles=[shaft,...(w.lockMode==='flange'?lockHoles:[]),...asmHoles];
+ const midHoles=[shaft,...(w.lockMode==='body'?lockHoles:[]),...asmHoles];
+ const pinX=w.moldBox/2-4;
+ const moldPins=[{type:'circle',x:pinX,y:0,r:1.5},{type:'circle',x:-pinX,y:0,r:1.5}];
+ const items=[];
+ for(let s=0;s<w.wheelSets;s++){
+  items.push(circleItem(w.rimOD,flangeHoles,'FLENSA '+(s+1)+'A'));
+  items.push(circleItem(w.undercut,midHoles,'BADAN '+(s+1)));
+  items.push(circleItem(w.rimOD,flangeHoles,'FLENSA '+(s+1)+'B'));
+ }
+ for(let ms=0;ms<w.moldSets;ms++){
+  items.push(rectItem(w.moldBox,w.moldBox,0,moldPins,'MOLD BASE'));
+  for(let l=0;l<moldLayers;l++)items.push(rectItem(w.moldBox,w.moldBox,moldID,moldPins,'MOLD RING '+(l+1)));
+ }
+ const pack=packItems(items,w.kerf);
+ const volAnn=Math.PI/4*(moldID*moldID-w.rimOD*w.rimOD)*w.tireW;
+ const perTire=volAnn/1000;
+ const totalMl=perTire*w.wheelSets*1.1;
+ const mass=totalMl*1.13;
+ const cat=mass*.035;
+ W={moldID,wall,robotWidth,Rlock,lip,flangeDiff:w.rimOD-w.undercut,moldLayers,moldStack,stackH,
+  items,pack,perTire,totalMl,mass,cat,asmR,shaft,lockHoles,asmHoles,
+  pieces:w.wheelSets*3+w.moldSets*(1+moldLayers)};
+}
+
+/* ========== ITEMS ========== */
+const C={acry:'#35E0FF',acryFill:'rgba(53,224,255,.09)',sil:'#FFB020',silFill:'rgba(255,176,32,.14)',
+ out:'#FF6B4A',inn:'#4FA3FF',dim:'#93A7C4',grid:'rgba(80,140,220,.09)',gridMaj:'rgba(80,140,220,.16)'};
+
+function drawHole(c,h,k,s){
+ if(h.type==='circle'){
+  c.beginPath();c.arc(h.x,h.y,h.r,0,TAU);c.stroke();
+  if(k>0){c.save();c.strokeStyle=C.inn;c.setLineDash([3/s,2/s]);c.beginPath();c.arc(h.x,h.y,Math.max(.1,h.r-k/2),0,TAU);c.stroke();c.restore();}
+ }
+}
+function circleItem(od,holes,label){
+ return {w:od,h:od,label,kind:'circle',
+  render(c,cx,cy,k,vp){
+   c.save();c.translate(cx,cy);
+   c.fillStyle=C.acryFill;c.strokeStyle=C.acry;c.lineWidth=1.3/vp.s;
+   c.beginPath();c.arc(0,0,od/2,0,TAU);c.fill();c.stroke();
+   if(k>0){c.save();c.strokeStyle=C.out;c.setLineDash([4/vp.s,3/vp.s]);c.beginPath();c.arc(0,0,od/2+k/2,0,TAU);c.stroke();c.restore();}
+   c.strokeStyle=C.inn;c.lineWidth=1.1/vp.s;
+   holes.forEach(h=>drawHole(c,h,k,vp.s));
+   c.restore();
+  },
+  dxf(em,cx,cy,k){em.circle(cx,cy,od/2+k/2,'OUTER_CUT');holes.forEach(h=>em.hole(h,cx,cy,k));}
+ };
+}
+function rectItem(w,h,holeDia,pins,label){
+ const rect=(ww,hh)=>[[-ww/2,-hh/2],[ww/2,-hh/2],[ww/2,hh/2],[-ww/2,hh/2]];
+ return {w,h,label,kind:'rect',
+  render(c,cx,cy,k,vp){
+   c.save();c.translate(cx,cy);
+   c.fillStyle=C.acryFill;c.strokeStyle=C.acry;c.lineWidth=1.3/vp.s;
+   c.strokeRect(-w/2,-h/2,w,h);
+   if(k>0){c.save();c.strokeStyle=C.out;c.setLineDash([4/vp.s,3/vp.s]);c.strokeRect(-w/2-k/2,-h/2-k/2,w+k,h+k);c.restore();}
+   if(holeDia>0){c.strokeStyle=C.inn;c.lineWidth=1.1/vp.s;c.beginPath();c.arc(0,0,holeDia/2,0,TAU);c.stroke();}
+   c.strokeStyle=C.inn;c.lineWidth=1.1/vp.s;pins.forEach(p=>drawHole(c,p,k,vp.s));
+   c.restore();
+  },
+  dxf(em,cx,cy,k){const o=offsetPoly(rect(w,h),k/2);em.poly(o.map(p=>[p[0]+cx,p[1]+cy]),'OUTER_CUT');
+   if(holeDia>0)em.circle(cx,cy,Math.max(.1,holeDia/2-k/2),'INNER_CUT');
+   pins.forEach(p=>em.hole(p,cx,cy,k));}
+ };
+}
+function packItems(items,k){
+ const M=6,GAP=3+k,SW=297,SH=210;
+ let x=M,y=M,rowH=0,used=0,area=0;const pl=[];
+ items.forEach(it=>{
+  if(x+it.w>SW-M&&x>M){x=M;y+=rowH+GAP;rowH=0;}
+  pl.push({it,x:x+it.w/2,y:y+it.h/2});
+  x+=it.w+GAP;rowH=Math.max(rowH,it.h);used=Math.max(used,y+rowH);
+  area+=it.w*it.h;
+ });
+ return {pl,overflow:used>SH-M,usePct:area/(SW*SH)*100,H:used};
+}
+
+/* ========== COMPUTE GEAR ========== */
+let G={};
+function computeGear(){
+ const g=S.gear;
+ const mk=(z,x,hole)=>makeGear(g.module,z,x,g.pa,hole);
+ const g1=mk(g.z1,g.x1,g.hole1);
+ const g2=mk(g.z2,g.x2,g.hole2);
+ const g3=mk(g.z3,g.x3,g.hole3);
+ const g4=mk(g.z4,g.x4,g.hole4);
+ const pair=(a,b)=>{
+  const pa=g.pa*RAD;
+  const C0=g.module*(a.z+b.z)/2;
+  const iw=inv(pa)+2*(a.x+b.x)*Math.tan(pa)/(a.z+b.z);
+  const aw=solveInv(iw,pa);
+  const cosAw=Math.cos(aw);
+  const Cw=isFinite(cosAw)&&cosAw>0?C0*Math.cos(pa)/cosAw:C0;
+  return {a,b,C0,Cw,cad:Cw+.08,ratio:b.z/a.z};
+ };
+ const s1=pair(g1,g2);
+ const s2=pair(g3,g4);
+ const ratio=s1.ratio;
+ const rpm=MOTORS[g.motor].rpm;
+ const loaded=rpm*LOAD/ratio;
+ const refOD=50;
+ const speed=Math.PI*(refOD/1000)*loaded/60;
+ const targetRatio=rpm*LOAD/g.targetRPM;
+ const outBolts=[];
+ for(let i=0;i<g.boltN;i++){const a=i*TAU/Math.max(1,g.boltN)+TAU/12;
+  outBolts.push({type:'circle',x:g.boltPCD/2*Math.cos(a),y:g.boltPCD/2*Math.sin(a),r:g.boltD/2});}
+ G={g1,g2,g3,g4,s1,s2,st:s1,ratio,loaded,speed,targetRatio,rpm,outBolts,
+  motorShaft:MOTORS[g.motor].shaft};
+}
+
+/* ========== VIEWPORT ========== */
+function makeVP(canvas,draw,posEl,zoomEl){
+ const vp={canvas,ctx:canvas.getContext('2d'),s:4,tx:0,ty:0,dpr:1,w:0,h:0,dirty:true,
+  bounds:{x:-10,y:-10,w:317,h:230},draw};
+ vp.resize=()=>{
+  const r=canvas.parentElement.getBoundingClientRect();
+  if(r.width<10||r.height<10)return;
+  vp.dpr=Math.min(2,window.devicePixelRatio||1);
+  vp.w=r.width;vp.h=r.height;
+  canvas.width=Math.round(r.width*vp.dpr);
+  canvas.height=Math.round(r.height*vp.dpr);
+  vp.dirty=true;
+ };
+ // Fallback untuk ResizeObserver
+ if(typeof ResizeObserver!=='undefined'){
+  new ResizeObserver(vp.resize).observe(canvas.parentElement);
+ }
+ window.addEventListener('resize',vp.resize);
+ vp.fit=b=>{
+  if(b)vp.bounds=b;
+  if(vp.w<10)vp.resize();
+  if(vp.w<10||vp.h<10)return;
+  const pad=28;
+  const sx=(vp.w-pad*2)/vp.bounds.w;
+  const sy=(vp.h-pad*2)/vp.bounds.h;
+  vp.s=clamp(Math.min(sx,sy),.3,80);
+  vp.tx=(vp.w-vp.bounds.w*vp.s)/2-vp.bounds.x*vp.s;
+  vp.ty=(vp.h-vp.bounds.h*vp.s)/2-vp.bounds.y*vp.s;
+  vp.dirty=true;
+  zoomEl.textContent=fmt(vp.s,1)+' px/mm';
+ };
+ vp.toWorld=(px,py)=>[(px-vp.tx)/vp.s,(py-vp.ty)/vp.s];
+ vp.zoomAt=(px,py,f)=>{
+  const [wx,wy]=vp.toWorld(px,py);
+  vp.s=clamp(vp.s*f,.3,80);
+  vp.tx=px-wx*vp.s;vp.ty=py-wy*vp.s;
+  vp.dirty=true;
+  zoomEl.textContent=fmt(vp.s,1)+' px/mm';
+ };
+ const pts=new Map();let pinchD=0;
+ canvas.addEventListener('pointerdown',e=>{
+  canvas.setPointerCapture(e.pointerId);
+  pts.set(e.pointerId,{x:e.offsetX,y:e.offsetY});
+  if(pts.size===2){const a=[...pts.values()];pinchD=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);}
+ });
+ canvas.addEventListener('pointermove',e=>{
+  try{
+   const [wx,wy]=vp.toWorld(e.offsetX,e.offsetY);
+   if(isFinite(wx)&&isFinite(wy))posEl.textContent=fmt(wx,1)+' , '+fmt(wy,1);
+   if(!pts.has(e.pointerId))return;
+   const p=pts.get(e.pointerId);
+   if(pts.size===1){vp.tx+=e.offsetX-p.x;vp.ty+=e.offsetY-p.y;vp.dirty=true;}
+   else if(pts.size===2){
+    p.x=e.offsetX;p.y=e.offsetY;
+    const a=[...pts.values()];
+    const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+    const mx=(a[0].x+a[1].x)/2,my=(a[0].y+a[1].y)/2;
+    if(pinchD>0)vp.zoomAt(mx,my,d/pinchD);
+    pinchD=d;return;
+   }
+   p.x=e.offsetX;p.y=e.offsetY;
+  }catch(err){console.warn('move err',err);}
+ });
+ const up=e=>{pts.delete(e.pointerId);pinchD=0;};
+ canvas.addEventListener('pointerup',up);
+ canvas.addEventListener('pointercancel',up);
+ canvas.addEventListener('wheel',e=>{e.preventDefault();vp.zoomAt(e.offsetX,e.offsetY,e.deltaY<0?1.12:1/1.12);},{passive:false});
+ vp.render=()=>{
+  try{
+   const c=vp.ctx;
+   c.setTransform(vp.dpr,0,0,vp.dpr,0,0);
+   c.clearRect(0,0,vp.w,vp.h);
+   drawGrid(c,vp);
+   c.save();
+   c.translate(vp.tx,vp.ty);
+   c.scale(vp.s,vp.s);
+   vp.draw(c,vp);
+   c.restore();
+   vp.dirty=false;
+  }catch(err){console.error('render err',err);vp.dirty=false;}
+ };
+ vp.resize();
+ return vp;
+}
+
+function drawGrid(c,vp){
+ const steps=[1,2,5,10,20,50,100];
+ let st=steps.find(s=>s*vp.s>=26)||100;
+ const [x0,y0]=vp.toWorld(0,0);
+ const [x1,y1]=vp.toWorld(vp.w,vp.h);
+ c.lineWidth=1;
+ for(let x=Math.floor(x0/st)*st;x<=x1;x+=st){
+  const px=x*vp.s+vp.tx;
+  c.strokeStyle=(Math.round(x/st)%5===0)?C.gridMaj:C.grid;
+  c.beginPath();c.moveTo(px,0);c.lineTo(px,vp.h);c.stroke();
+ }
+ for(let y=Math.floor(y0/st)*st;y<=y1;y+=st){
+  const py=y*vp.s+vp.ty;
+  c.strokeStyle=(Math.round(y/st)%5===0)?C.gridMaj:C.grid;
+  c.beginPath();c.moveTo(0,py);c.lineTo(vp.w,py);c.stroke();
+ }
+}
+
+function label(c,vp,wx,wy,txt,color=C.dim,size=10,align='center'){
+ const px=wx*vp.s+vp.tx,py=wy*vp.s+vp.ty;
+ c.save();
+ c.setTransform(vp.dpr,0,0,vp.dpr,0,0);
+ c.font=`600 ${size}px ui-monospace,Consolas,monospace`;
+ c.textAlign=align;c.textBaseline='middle';
+ const w=c.measureText(txt).width;
+ const bx=align==='center'?px-w/2:align==='left'?px:px-w;
+ c.fillStyle='rgba(7,13,23,.85)';
+ c.fillRect(bx-4,py-size/2-3,w+8,size+6);
+ c.fillStyle=color;
+ c.fillText(txt,px,py);
+ c.restore();
+}
+
+/* ========== DRAW WHEEL ========== */
+let WA=0;
+function drawWheel(c,vp){
+ const w=S.wheel;
+ if(w.view==='layout'){
+  c.strokeStyle=C.acry;c.lineWidth=1.6/vp.s;
+  c.fillStyle='rgba(53,224,255,.03)';
+  c.fillRect(0,0,297,210);
+  c.strokeRect(0,0,297,210);
+  W.pack.pl.forEach(p=>{
+   try{p.it.render(c,p.x,p.y,w.kerf,vp);}catch(e){console.warn('item render',e);}
+   if(w.guides)label(c,vp,p.x,p.y+p.it.h/2+3.2,p.it.label,C.dim,8.5);
+  });
+  label(c,vp,297-41,210-16.5,'ROBOT SOCCER CAD STUDIO',C.acry,8);
+  label(c,vp,297-41,210-9.5,'SKALA 1:1 · MM',C.dim,8);
+  if(W.pack.overflow)label(c,vp,148.5,214,'⚠ MELEBIHI A4',C.out,11);
+ }else{
+  drawAssembly(c,vp);
+ }
+}
+function drawAssembly(c,vp){
+ const w=S.wheel;
+ const tR=w.tireOD/2,rR=w.rimOD/2,uR=w.undercut/2;
+ const fx=-42;
+ c.save();
+ c.translate(fx,0);
+ c.rotate(WA);
+ c.fillStyle=C.silFill;c.strokeStyle=C.sil;c.lineWidth=1.4/vp.s;
+ c.beginPath();c.arc(0,0,tR,0,TAU);c.arc(0,0,rR,0,TAU,true);c.fill();c.stroke();
+ c.fillStyle=C.acryFill;c.strokeStyle=C.acry;
+ c.beginPath();c.arc(0,0,rR,0,TAU);c.fill();c.stroke();
+ c.setLineDash([3/vp.s,2.5/vp.s]);c.strokeStyle=C.dim;
+ c.beginPath();c.arc(0,0,uR,0,TAU);c.stroke();
+ c.setLineDash([]);
+ c.strokeStyle=C.inn;c.lineWidth=1.2/vp.s;
+ W.lockHoles.forEach(h=>{c.beginPath();c.arc(h.x,h.y,h.r,0,TAU);c.fillStyle=C.silFill;c.fill();c.stroke();});
+ W.asmHoles.forEach(h=>{c.beginPath();c.arc(h.x,h.y,h.r,0,TAU);c.stroke();});
+ c.beginPath();
+ W.shaft.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));
+ c.closePath();
+ c.fillStyle='rgba(7,13,23,.9)';c.fill();c.stroke();
+ c.restore();
+ label(c,vp,fx,tR+5,'TAMPAK DEPAN',C.acry,10);
+}
+
+/* ========== DRAW GEAR ========== */
+let GA=0;
+function drawOneGear(c,vp,g,x,y,rot,color,bolts){
+ c.save();
+ c.translate(x,y);
+ c.rotate(rot);
+ c.fillStyle=color==='a'?'rgba(53,224,255,.1)':'rgba(255,176,32,.1)';
+ c.strokeStyle=color==='a'?C.acry:C.sil;
+ c.lineWidth=1.3/vp.s;
+ c.beginPath();
+ g.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));
+ c.closePath();
+ c.fill();c.stroke();
+ if(S.gear.guides){
+  c.save();c.strokeStyle=C.dim;c.setLineDash([3/vp.s,3/vp.s]);c.lineWidth=.9/vp.s;
+  c.beginPath();c.arc(0,0,g.rp,0,TAU);c.stroke();
+  c.restore();
+ }
+ c.strokeStyle=C.inn;c.lineWidth=1.1/vp.s;
+ drawHole(c,{type:'circle',x:0,y:0,r:g.hole/2},S.gear.kerf,vp.s);
+ (bolts||[]).forEach(h=>drawHole(c,h,S.gear.kerf,vp.s));
+ c.restore();
+}
+function drawGearScene(c,vp){
+ const g=S.gear,st=G.st;
+ if(!st||!st.a||!st.b)return;
+ if(g.view==='mesh'){
+  const phi=Math.PI-Math.PI/st.b.z;
+  drawOneGear(c,vp,st.a,0,0,GA,'a');
+  drawOneGear(c,vp,st.b,st.cad,0,phi-GA*st.a.z/st.b.z,'b',G.outBolts);
+  if(g.guides){
+   label(c,vp,0,-st.a.ra-4,'Z'+st.a.z+' · M'+g.module,C.acry,10);
+   label(c,vp,st.cad,-st.b.ra-4,'Z'+st.b.z+' · Ø'+fmt(st.b.od,1),C.sil,10);
+  }
+ }else{
+  const gg=g.view==='pinion'?st.a:st.b;
+  drawOneGear(c,vp,gg,0,0,GA,g.view==='pinion'?'a':'b',g.view==='spur'?G.outBolts:[]);
+  if(g.guides){
+   label(c,vp,0,-gg.ra-4,'Z'+gg.z+' · OD '+fmt(gg.od,2),C.dim,10);
+  }
+ }
+}
+
+/* ========== INIT VIEWPORTS ========== */
+const vpW=makeVP($('#cvWheel'),drawWheel,$('#wPos'),$('#wZoom'));
+const vpG=makeVP($('#cvGear'),drawGearScene,$('#gPos'),$('#gZoom'));
+function wheelBounds(){return S.wheel.view==='layout'?{x:-12,y:-12,w:321,h:236}:{x:-72,y:-36,w:150,h:78};}
+function gearBounds(){
+ const st=G.st||{a:{ra:5,z:8},b:{ra:20,z:40,od:40},cad:25};
+ if(!st.a||!st.b)return {x:-30,y:-30,w:80,h:80};
+ if(S.gear.view==='mesh'){
+  const r=Math.max(st.a.ra||5,st.b.ra||20);
+  return {x:-r-8,y:-r-12,w:(st.cad||25)+2*r+16,h:2*r+26};
+ }
+ const gg=S.gear.view==='pinion'?st.a:st.b;
+ const r=gg.ra||20;
+ return {x:-r-8,y:-r-12,w:2*r+16,h:2*r+26};
+}
+
+/* ========== FINDER ========== */
+let finderResults=[];
+function runFinder(){
+ const g=S.gear;
+ const rpm=MOTORS[g.motor].rpm;
+ const target=rpm*LOAD/g.targetRPM;
+ const res=[];
+ for(let z1=8;z1<=24;z1++){
+  const z2=Math.round(z1*target);
+  for(let d=-1;d<=1;d++){
+   const zz=clamp(z2+d,12,160);
+   const ratio=zz/z1;
+   const err=(ratio-target)/target*100;
+   const score=Math.abs(err)*2+(z1<8?6:0);
+   res.push({zs:[z1,zz],stages:1,ratio,err,score,spurOD:g.module*(zz+2)});
+  }
+ }
+ res.sort((a,b)=>a.score-b.score);
+ const list=res.slice(0,10);
+ finderResults=list;
+ $('#finderList').innerHTML=list.length?list.map((o,i)=>{
+  const cls=Math.abs(o.err)<2?'g':Math.abs(o.err)<6?'a':'r';
+  return `<button class="opt" data-i="${i}">
+   <div class="opt-h"><b>1 : ${fmt(o.ratio,2)}</b><span class="stg">1-TINGKAT</span>
+   <span class="err ${cls}">${o.err>=0?'+':''}${fmt(o.err,1)}%</span></div>
+   <div class="opt-b">Z${o.zs[0]}→Z${o.zs[1]} · M${g.module} · Spur Ø${fmt(o.spurOD,1)}</div>
+   </button>`;
+ }).join(''):'<p class="note">Tidak ada kombinasi.</p>';
+}
+$('#finderList').addEventListener('click',e=>{
+ const b=e.target.closest('.opt');
+ if(!b)return;
+ const o=finderResults[+b.dataset.i];
+ if(!o)return;
+ S.gear.z1=o.zs[0];S.gear.z2=o.zs[1];
+ syncInputs();refresh('gear');
+ toast('Kombinasi diterapkan','ok');
+});
+$('#btnFind').onclick=()=>{runFinder();toast('Pencarian selesai','ok');};
+
+/* ========== UI ========== */
+function setCalc(map){
+ for(const k in map){
+  const el=document.querySelector(`[data-calc="${k}"]`);
+  if(el)el.textContent=map[k];
+ }
+}
+const chk=(s,t)=>`<div class="chk ${s}"><i>${s==='ok'?'✓':s==='warn'?'!':s==='bad'?'✕':'i'}</i><span>${t}</span></div>`;
+
+function renderWheelUI(){
+ const w=S.wheel;
+ setCalc({
+  moldID:fmt(W.moldID,2),wall:fmt(W.wall,2),robotWidth:fmt(W.robotWidth,0),
+  kerfHalf:fmt(w.kerf/2,3),piecesTotal:W.pieces+' Keping',
+  siliconeVol:fmt(W.totalMl,1),catalyst:fmt(W.cat,1)
+ });
+ const rc=$('#ruleChip');
+ if(W.robotWidth<=160){rc.className='rule-chip ok';rc.textContent='AVATAR ≤160 mm: '+fmt(W.robotWidth,0)+' ✓';}
+ else{rc.className='rule-chip bad';rc.textContent='AVATAR >160 mm: '+fmt(W.robotWidth,0)+' ✕';}
+ $('#boltBox').classList.toggle('hide
