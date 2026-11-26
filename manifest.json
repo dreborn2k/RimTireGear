@@ -1,0 +1,20 @@
+{
+"name": "Robot Soccer CAD Studio — Velg & Gear",
+"short_name": "Robot CAD",
+"description": "Studio CAD Parametrik Velg Ban Silikon & Kalkulator Rasio Gear Pinion-Spur Robot Soccer (Export AutoCAD R12 DXF).",
+"start_url": "./index.html",
+"scope": "./",
+"display": "standalone",
+"orientation": "any",
+"background_color": "#090f1d",
+"theme_color": "#070c18",
+"categories": ["utilities", "productivity", "education"],
+"icons": [
+{
+"src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23090f1d'/%3E%3Ccircle cx='256' cy='256' r='184' fill='none' stroke='%2338bdf8' stroke-width='38'/%3E%3Ccircle cx='256' cy='256' r='106' fill='none' stroke='%23fbbf24' stroke-width='36' stroke-dasharray='32 23'/%3E%3Ccircle cx='256' cy='256' r='68' fill='%23fbbf24'/%3E%3Ccircle cx='256' cy='256' r='34' fill='%23090f1d'/%3E%3C/svg%3E",
+"sizes": "192x192 512x512 any",
+"type": "image/svg+xml",
+"purpose": "any maskable"
+}
+]
+}
