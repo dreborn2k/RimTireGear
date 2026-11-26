@@ -24,7 +24,6 @@
       font-family: var(--font-mono);
     }
 
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -52,6 +51,11 @@
     canvas#cadCanvas:active {
       cursor: grabbing;
     }
+
+    #toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#070c18] text-slate-100 antialiased selection:bg-sky-500/30 selection:text-sky-200">
@@ -68,7 +72,7 @@
         </div>
         <div>
           <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white">Robot Soccer CAD Studio</h1>
-          <p class="text-[11px] sm:text-xs font-mono-tech text-slate-400">A4 Sheet (297×210 mm) • Involute Gear • Dogbone CNC • AutoCAD R12 DXF</p>
+          <p class="text-[11px] sm:text-xs font-mono-tech text-slate-400">A4 Sheet (297×210 mm) • Involute Gear • Velg &amp; Ban • AutoCAD R12 DXF</p>
         </div>
       </div>
 
@@ -100,8 +104,6 @@
            PANEL 1: GEAR PINION (Z1) & SPUR (Z2)
            ========================================================= -->
       <div id="panelGear" class="flex flex-col gap-4">
-
-        <!-- KARTU PARAMETER DASAR & RASIO -->
         <section class="bg-[#111b2e] border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col gap-3.5">
           <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
             <h2 class="text-xs font-extrabold uppercase tracking-wider text-white">1. Parameter Gear &amp; Rasio</h2>
@@ -110,7 +112,7 @@
             </span>
           </div>
 
-          <!-- Preset Rasio Cepat Robot Soccer -->
+          <!-- Preset Rasio Cepat -->
           <div>
             <span class="block text-[11px] font-semibold text-slate-400 mb-1.5">Preset Cepat Robot Soccer (Motor N20 / Coreless):</span>
             <div class="flex flex-wrap gap-1.5">
@@ -151,7 +153,7 @@
             </div>
           </div>
 
-          <!-- SUB-KARTU PINION (Z1) & SPUR (Z2) -->
+          <!-- PINION Z1 & SPUR Z2 -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
             <!-- PINION Z1 -->
             <div class="bg-[#0b1324] border border-sky-500/30 rounded-xl p-3 flex flex-col gap-2.5">
@@ -259,7 +261,6 @@
             </div>
           </div>
 
-          <!-- RINGKASAN TEKNIS GEAR -->
           <div id="gearTelemetry" class="bg-[#0b1324] border border-slate-800 rounded-xl p-3 font-mono-tech text-[11px] text-slate-300 space-y-1"></div>
         </section>
       </div>
@@ -294,6 +295,59 @@
               <label for="inpTireW" class="block text-[11px] font-semibold text-slate-400 mb-1">Lebar Ban / Velg (mm)</label>
               <input id="inpTireW" type="number" min="6" max="35" step="0.5" value="15.0"
                 class="w-full bg-[#0b1324] border border-slate-700 focus:border-sky-400 rounded-lg px-2.5 py-2 text-xs font-mono-tech text-white outline-none" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label for="inpRimFlange" class="block text-[11px] font-semibold text-slate-400 mb-1">Tebal Bibir Velg (mm)</label>
+              <input id="inpRimFlange" type="number" min="0.8" max="6" step="0.1" value="1.8"
+                class="w-full bg-[#0b1324] border border-slate-700 focus:border-sky-400 rounded-lg px-2.5 py-2 text-xs font-mono-tech text-white outline-none" />
+            </div>
+            <div>
+              <label for="inpRimGrooveDepth" class="block text-[11px] font-semibold text-slate-400 mb-1">Dalam Alur Ban (mm)</label>
+              <input id="inpRimGrooveDepth" type="number" min="0.2" max="5" step="0.1" value="1.2"
+                class="w-full bg-[#0b1324] border border-slate-700 focus:border-sky-400 rounded-lg px-2.5 py-2 text-xs font-mono-tech text-white outline-none" />
+            </div>
+          </div>
+
+          <!-- Pengaturan Cetakan Molding Ban Silikon -->
+          <div class="bg-[#0b1324] border border-emerald-500/35 rounded-xl p-3 flex flex-col gap-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400">● Cetakan Molding Ban (Akrilik Tumpuk)</span>
+              <span id="tagMoldOD" class="text-[11px] font-mono-tech text-emerald-300 bg-emerald-950/70 px-2 py-0.5 rounded">Mold OD 62.0 mm</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="selAcrylicThick" class="block text-[10px] font-semibold text-slate-400 mb-1">Tebal Lembaran Akrilik</label>
+                <select id="selAcrylicThick"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none">
+                  <option value="3" selected>Akrilik 3.0 mm (Tumpuk)</option>
+                  <option value="5">Akrilik 5.0 mm (Tumpuk)</option>
+                </select>
+              </div>
+              <div>
+                <label for="inpMoldWall" class="block text-[10px] font-semibold text-slate-400 mb-1">Tebal Dinding (mm)</label>
+                <input id="inpMoldWall" type="number" min="3" max="20" step="0.5" value="6.0"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label for="inpMoldBolts" class="block text-[10px] font-semibold text-slate-400 mb-1">Baut Klem Mold</label>
+                <input id="inpMoldBolts" type="number" min="2" max="8" step="1" value="4"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+              <div>
+                <label for="inpMoldBoltDia" class="block text-[10px] font-semibold text-slate-400 mb-1">Ø Baut Mold</label>
+                <input id="inpMoldBoltDia" type="number" min="1.5" max="6" step="0.1" value="3.2"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+              <div>
+                <label for="inpPourGate" class="block text-[10px] font-semibold text-slate-400 mb-1">Lubang Tuang</label>
+                <input id="inpPourGate" type="number" min="2.0" max="8.0" step="0.5" value="4.0"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
             </div>
           </div>
 
@@ -439,15 +493,15 @@
         <!-- HUD INFO KIRI ATAS -->
         <div id="hudBanner"
           class="absolute top-3 left-3 max-w-[90%] bg-[#070c18]/90 backdrop-blur border border-slate-700/90 rounded-full px-3.5 py-1.5 font-mono-tech text-[11px] text-slate-200 pointer-events-none shadow">
-          A4 Landscape (297×210 mm) • Skala 1:1
+          A4 Landscape (297×210 mm) • Auto-Fit
         </div>
 
         <!-- LEGENDA LAYER KANAN BAWAH -->
         <div class="hidden sm:flex flex-wrap items-center gap-3 absolute bottom-3 right-3 bg-[#070c18]/90 backdrop-blur border border-slate-800 rounded-xl px-3 py-1.5 font-mono-tech text-[10px] text-slate-300 pointer-events-none">
           <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>Pinion / Velg</span>
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Spur Gear</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Spur / Mold Cavity</span>
           <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Bore / D-Shaft</span>
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Kompensasi CNC</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Mold Ring / Pin</span>
         </div>
       </div>
 
@@ -472,7 +526,7 @@
           <button type="button" data-action="zoom-out" title="Perkecil"
             class="px-3 py-2 rounded-xl text-xs font-mono-tech font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700">−</button>
           <button type="button" data-action="zoom-reset"
-            class="px-3 py-2 rounded-xl text-xs font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700">🎯 Reset View</button>
+            class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-400/40">🎯 Auto-Fit</button>
           <button type="button" data-action="zoom-in" title="Perbesar"
             class="px-3 py-2 rounded-xl text-xs font-mono-tech font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700">+</button>
         </div>
@@ -490,9 +544,6 @@
     (function () {
       'use strict';
 
-      /* =====================================================================
-         1. STATE APLIKASI PARAMETRIK
-         ===================================================================== */
       const state = {
         activeModule: 'gear',   // 'gear' | 'rim' | 'combined'
         layoutMode: 'mesh',     // 'mesh' | 'cut'
@@ -500,24 +551,21 @@
         isSpinning: false,
         spinAngleDeg: 0,
 
-        // Viewport Kanvas
+        autoFit: true,
         zoom: 1.0,
         panX: 0,
         panY: 0,
 
-        // Parameter Gear Involute
         module: 0.50,
         pressureAngle: 20,
         backlash: 0.04,
 
-        // Pinion (Z1)
         z1: 8,
         x1: 0.35,
         bore1: 1.00,
         gearShaft1: 'ROUND',
         gearFlat1: 0.78,
 
-        // Spur (Z2)
         z2: 80,
         x2: 0.00,
         bore2: 3.00,
@@ -527,10 +575,16 @@
         boltDia2: 2.2,
         boltPcd2: 14.0,
 
-        // Velg & Ban Silikon
         tireOD: 50.0,
         rimOD: 39.0,
         tireW: 15.0,
+        rimFlange: 1.8,
+        rimGrooveDepth: 1.2,
+        acrylicThick: 3,
+        moldWall: 6.0,
+        moldBolts: 4,
+        moldBoltDia: 3.2,
+        pourGateDia: 4.0,
         rimShaft: 'DOUBLE_D',
         rimBore: 5.45,
         rimFlat: 3.80,
@@ -538,55 +592,49 @@
         rimPinDia: 2.2,
         rimPinPcd: 28.0,
 
-        // Kompensasi Endmill & Dogbone CNC
         endmillDia: 0.80
       };
 
       let dom = {};
-      let animId = null;
-      let lastFrameTime = 0;
-      let toastTimeout = null;
-      let dxfBlobUrl = null;
+      let rafId = null;
+      let lastTs = 0;
+      let toastTimer = null;
+      let activeBlobUrl = null;
 
-      function notify(msg) {
-        if (!dom.toast) return;
-        dom.toast.textContent = msg;
-        dom.toast.classList.remove('translate-y-20', 'opacity-0');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => {
-          dom.toast.classList.add('translate-y-20', 'opacity-0');
-        }, 2300);
+      function deg2rad(deg) {
+        return (deg * Math.PI) / 180;
       }
 
-      const deg2rad = (d) => (d * Math.PI) / 180;
-      const involute = (a) => Math.tan(a) - a;
+      function showToast(msg) {
+        if (!dom.toast) return;
+        dom.toast.textContent = msg;
+        dom.toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => dom.toast.classList.remove('show'), 2200);
+      }
 
-      /* =====================================================================
-         2. GENERATOR KONTUR POROS (ROUND, SINGLE-D, DOUBLE-D + DOGBONE CNC)
-         ===================================================================== */
       function buildBoreContour(boreDia, shaftShape, flatDim, endmillDia) {
-        if (!boreDia || boreDia <= 0.05) return [];
+        if (!boreDia || boreDia <= 0.1) return [];
         const r = boreDia / 2;
         const rDog = endmillDia > 0.12 ? Math.min(endmillDia / 2, r * 0.42) : 0;
         const pts = [];
 
-        // SINGLE-D SHAFT
         if (shaftShape === 'SINGLE_D' && flatDim > 0 && flatDim < boreDia - 0.04) {
           const xFlat = Math.max(-r * 0.85, Math.min(r * 0.85, flatDim - r));
           const yInt = Math.sqrt(Math.max(0.005, r * r - xFlat * xFlat));
           const angStart = Math.atan2(-yInt, xFlat);
           const angEnd = Math.atan2(yInt, xFlat);
-          const arcSpan = (angEnd - angStart + Math.PI * 2) % (Math.PI * 2) || Math.PI * 2;
+          const span = (angEnd - angStart + Math.PI * 2) % (Math.PI * 2) || Math.PI * 2;
 
           if (rDog > 0.04) {
-            const cBot = { x: xFlat - rDog * 0.5, y: -yInt + rDog * 0.25 };
-            const cTop = { x: xFlat - rDog * 0.5, y: yInt - rDog * 0.25 };
+            const cBot = { x: xFlat - rDog * 0.48, y: -yInt + rDog * 0.25 };
+            const cTop = { x: xFlat - rDog * 0.48, y: yInt - rDog * 0.25 };
             for (let i = 0; i <= 5; i++) {
               const a = -Math.PI * 0.65 + (Math.PI * 1.15 * i) / 5;
               pts.push({ x: cBot.x + rDog * Math.cos(a), y: cBot.y + rDog * Math.sin(a) });
             }
             for (let i = 1; i < 24; i++) {
-              const a = angStart + (arcSpan * i) / 24;
+              const a = angStart + (span * i) / 24;
               pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
             }
             for (let i = 0; i <= 5; i++) {
@@ -596,7 +644,7 @@
           } else {
             pts.push({ x: xFlat, y: -yInt });
             for (let i = 1; i < 24; i++) {
-              const a = angStart + (arcSpan * i) / 24;
+              const a = angStart + (span * i) / 24;
               pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
             }
             pts.push({ x: xFlat, y: yInt });
@@ -604,7 +652,6 @@
           return pts;
         }
 
-        // DOUBLE-D SHAFT
         if (shaftShape === 'DOUBLE_D' && flatDim > 0 && flatDim < boreDia - 0.04) {
           const halfFlat = Math.min(r * 0.92, Math.max(0.05, flatDim / 2));
           const yInt = Math.sqrt(Math.max(0.005, r * r - halfFlat * halfFlat));
@@ -612,21 +659,21 @@
           const angR2 = Math.atan2(yInt, halfFlat);
           const angL1 = Math.atan2(yInt, -halfFlat);
           const angL2 = Math.atan2(-yInt, -halfFlat);
-          const rightSpan = (angR2 - angR1 + Math.PI * 2) % (Math.PI * 2);
-          const leftSpan = (angL2 - angL1 + Math.PI * 2) % (Math.PI * 2);
+          const rSpan = (angR2 - angR1 + Math.PI * 2) % (Math.PI * 2);
+          const lSpan = (angL2 - angL1 + Math.PI * 2) % (Math.PI * 2);
 
           if (rDog > 0.04) {
-            const cBR = { x: halfFlat - rDog * 0.5, y: -yInt + rDog * 0.25 };
-            const cTR = { x: halfFlat - rDog * 0.5, y: yInt - rDog * 0.25 };
-            const cTL = { x: -halfFlat + rDog * 0.5, y: yInt - rDog * 0.25 };
-            const cBL = { x: -halfFlat + rDog * 0.5, y: -yInt + rDog * 0.25 };
+            const cBR = { x: halfFlat - rDog * 0.48, y: -yInt + rDog * 0.25 };
+            const cTR = { x: halfFlat - rDog * 0.48, y: yInt - rDog * 0.25 };
+            const cTL = { x: -halfFlat + rDog * 0.48, y: yInt - rDog * 0.25 };
+            const cBL = { x: -halfFlat + rDog * 0.48, y: -yInt + rDog * 0.25 };
 
             for (let i = 0; i <= 4; i++) {
               const a = -Math.PI * 0.65 + (Math.PI * 1.15 * i) / 4;
               pts.push({ x: cBR.x + rDog * Math.cos(a), y: cBR.y + rDog * Math.sin(a) });
             }
             for (let i = 1; i < 12; i++) {
-              const a = angR1 + (rightSpan * i) / 12;
+              const a = angR1 + (rSpan * i) / 12;
               pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
             }
             for (let i = 0; i <= 4; i++) {
@@ -638,7 +685,7 @@
               pts.push({ x: cTL.x + rDog * Math.cos(a), y: cTL.y + rDog * Math.sin(a) });
             }
             for (let i = 1; i < 12; i++) {
-              const a = angL1 + (leftSpan * i) / 12;
+              const a = angL1 + (lSpan * i) / 12;
               pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
             }
             for (let i = 0; i <= 4; i++) {
@@ -648,13 +695,13 @@
           } else {
             pts.push({ x: halfFlat, y: -yInt });
             for (let i = 1; i < 12; i++) {
-              const a = angR1 + (rightSpan * i) / 12;
+              const a = angR1 + (rSpan * i) / 12;
               pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
             }
             pts.push({ x: halfFlat, y: yInt });
             pts.push({ x: -halfFlat, y: yInt });
             for (let i = 1; i < 12; i++) {
-              const a = angL1 + (leftSpan * i) / 12;
+              const a = angL1 + (lSpan * i) / 12;
               pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
             }
             pts.push({ x: -halfFlat, y: -yInt });
@@ -662,314 +709,267 @@
           return pts;
         }
 
-        // FULL ROUND SHAFT
-        const steps = 32;
-        for (let i = 0; i < steps; i++) {
-          const a = (i * 2 * Math.PI) / steps;
+        const segs = 32;
+        for (let i = 0; i < segs; i++) {
+          const a = (i * 2 * Math.PI) / segs;
           pts.push({ x: r * Math.cos(a), y: r * Math.sin(a) });
         }
         return pts;
       }
 
-      /**
-       * Offset poligon tertutup keluar (untuk kompensasi radius endmill CNC pada gigi)
-       */
-      function offsetPolygonOutward(pts, offsetDist) {
-        if (!pts || pts.length < 3 || Math.abs(offsetDist) < 1e-6) return pts;
-        const n = pts.length;
-        const out = [];
-        for (let i = 0; i < n; i++) {
-          const prev = pts[(i - 1 + n) % n];
-          const curr = pts[i];
-          const next = pts[(i + 1) % n];
-
-          const dx1 = curr.x - prev.x;
-          const dy1 = curr.y - prev.y;
-          const len1 = Math.hypot(dx1, dy1) || 1;
-          const nx1 = dy1 / len1;
-          const ny1 = -dx1 / len1;
-
-          const dx2 = next.x - curr.x;
-          const dy2 = next.y - curr.y;
-          const len2 = Math.hypot(dx2, dy2) || 1;
-          const nx2 = dy2 / len2;
-          const ny2 = -dx2 / len2;
-
-          let bx = nx1 + nx2;
-          let by = ny1 + ny2;
-          const blen = Math.hypot(bx, by);
-          if (blen < 1e-6) {
-            bx = nx1;
-            by = ny1;
-          } else {
-            bx /= blen;
-            by /= blen;
-          }
-          const dot = Math.max(0.35, bx * nx1 + by * ny1);
-          const dist = Math.min(offsetDist * 1.6, offsetDist / dot);
-          out.push({
-            x: curr.x + bx * dist,
-            y: curr.y + by * dist
-          });
-        }
-        return out;
-      }
-
-      /* =====================================================================
-         3. GENERATOR PROFIL GEAR INVOLUTE + DOGBONE ROOT + BORE D-SHAFT
-         ===================================================================== */
-      function buildGearData(m, z, alphaDeg, x, boreDia, shaftShape, flatDim, boltCount, boltDia, boltPcd) {
-        const alpha0 = deg2rad(alphaDeg);
-        const Dp = m * z;
-        const rp = Dp / 2;
-        const Db = Dp * Math.cos(alpha0);
-        const rb = Db / 2;
-
-        const ha = m * (1 + x);
-        const hf = m * (1.25 - x);
-        let ra = rp + ha;
-        const rf = Math.max(m * 0.45, rp - hf);
-
-        const sp = m * (Math.PI / 2 + 2 * x * Math.tan(alpha0));
-        const psiP = sp / (2 * rp);
-        const psiB = psiP + involute(alpha0);
+      function buildGearSingle(m, z, shiftX, boreDia, shaftShape, flatDim, boltCount, boltDia, boltPcd) {
+        const alpha = deg2rad(state.pressureAngle);
+        const rp = (m * z) / 2;
+        const rb = rp * Math.cos(alpha);
+        const ra = rp + m * (1 + shiftX);
+        const rf = Math.max(m * 0.45, rp - m * (1.25 - shiftX));
+        const invAlpha = Math.tan(alpha) - alpha;
+        const backlashRad = state.backlash / Math.max(0.5, 2 * rp);
+        const halfThick = (Math.PI / (2 * z)) + (2 * shiftX * Math.tan(alpha)) / z - backlashRad;
+        const psiB = halfThick + invAlpha;
 
         const rStart = Math.max(rb, rf);
         const tStart = rStart > rb ? Math.sqrt(Math.max(0, (rStart / rb) ** 2 - 1)) : 0;
-        let tEnd = Math.sqrt(Math.max(0, (ra / rb) ** 2 - 1));
+        const tEnd = Math.sqrt(Math.max(0, (ra / rb) ** 2 - 1));
+        const step = (2 * Math.PI) / z;
+        const ptsNominal = [];
 
-        // Cegah ujung gigi runcing berpotongan
-        if (tEnd - Math.atan(tEnd) > psiB - 0.008) {
-          let tSafe = tEnd;
-          for (let iter = 0; iter < 12; iter++) {
-            const f = (tSafe - Math.atan(tSafe)) - (psiB - 0.008);
-            const df = (tSafe * tSafe) / (1 + tSafe * tSafe);
-            if (Math.abs(df) < 1e-9) break;
-            tSafe = Math.max(tStart, tSafe - f / df);
-          }
-          tEnd = tSafe;
-          ra = rb * Math.sqrt(1 + tEnd * tEnd);
-        }
-
-        const Da = ra * 2;
-        const Df = rf * 2;
-        const invSteps = 9;
-        const pitchStep = (2 * Math.PI) / z;
-        const nominalPts = [];
-
-        // Cek apakah endmill muat untuk membuat Dogbone Root Relief di lembah akar gigi
-        const rootGapWidth = m * (Math.PI / 2 - 2 * x * Math.tan(alpha0));
-        const canDogboneRoot = state.endmillDia > 0.12 && state.endmillDia < rootGapWidth * 0.82;
-        const rDogRoot = canDogboneRoot ? Math.min(state.endmillDia / 2, (ra - rf) * 0.34) : 0;
+        const rootGapWidth = m * (Math.PI / 2 - 2 * shiftX * Math.tan(alpha));
+        const canDogboneRoot = state.endmillDia > 0.12 && state.endmillDia < rootGapWidth * 0.80;
+        const rDogRoot = canDogboneRoot ? Math.min(state.endmillDia / 2, (ra - rf) * 0.35) : 0;
 
         for (let k = 0; k < z; k++) {
-          const toothCenter = k * pitchStep;
-
-          if (rf < rb) {
-            const angRootR = toothCenter - psiB;
-            nominalPts.push({ x: rf * Math.cos(angRootR), y: rf * Math.sin(angRootR) });
-          }
-
-          for (let i = 0; i <= invSteps; i++) {
-            const t = tStart + ((tEnd - tStart) * i) / invSteps;
+          const center = k * step;
+          for (let i = 0; i <= 7; i++) {
+            const t = tStart + ((tEnd - tStart) * i) / 7;
             const r = rb * Math.sqrt(1 + t * t);
-            const ang = toothCenter - (psiB - (t - Math.atan(t)));
-            nominalPts.push({ x: r * Math.cos(ang), y: r * Math.sin(ang) });
+            const ang = center - (psiB - (t - Math.atan(t)));
+            ptsNominal.push({ x: r * Math.cos(ang), y: r * Math.sin(ang) });
           }
-
-          const thetaInvTop = tEnd - Math.atan(tEnd);
-          const midTop = toothCenter;
-          nominalPts.push({ x: ra * Math.cos(midTop), y: ra * Math.sin(midTop) });
-
-          for (let i = invSteps; i >= 0; i--) {
-            const t = tStart + ((tEnd - tStart) * i) / invSteps;
+          for (let i = 7; i >= 0; i--) {
+            const t = tStart + ((tEnd - tStart) * i) / 7;
             const r = rb * Math.sqrt(1 + t * t);
-            const ang = toothCenter + (psiB - (t - Math.atan(t)));
-            nominalPts.push({ x: r * Math.cos(ang), y: r * Math.sin(ang) });
+            const ang = center + (psiB - (t - Math.atan(t)));
+            ptsNominal.push({ x: r * Math.cos(ang), y: r * Math.sin(ang) });
           }
 
-          if (rf < rb) {
-            const angRootL = toothCenter + psiB;
-            nominalPts.push({ x: rf * Math.cos(angRootL), y: rf * Math.sin(angRootL) });
-          }
-
-          // Lembah Akar Gigi + Dogbone Corner Relief
-          const currRootEnd = toothCenter + (rf < rb ? psiB : psiB - (tStart - Math.atan(tStart)));
-          const nextRootStart = (k + 1) * pitchStep - (rf < rb ? psiB : psiB - (tStart - Math.atan(tStart)));
+          const currRootEnd = center + psiB;
+          const nextRootStart = (k + 1) * step - psiB;
           const midRoot = (currRootEnd + nextRootStart) / 2;
 
           if (canDogboneRoot && rDogRoot > 0.04) {
-            const rRelief = Math.max(0.1, rf - rDogRoot * 0.44);
+            const rRelief = Math.max(0.1, rf - rDogRoot * 0.45);
             const dAng = Math.min(Math.abs(nextRootStart - currRootEnd) * 0.28, rDogRoot / Math.max(0.5, rf));
             const aRight = currRootEnd + dAng;
             const aLeft = nextRootStart - dAng;
-
-            nominalPts.push({ x: rRelief * Math.cos(aRight), y: rRelief * Math.sin(aRight) });
+            ptsNominal.push({ x: rRelief * Math.cos(aRight), y: rRelief * Math.sin(aRight) });
             for (let d = 1; d < 5; d++) {
               const ad = aRight + ((aLeft - aRight) * d) / 5;
-              nominalPts.push({ x: rRelief * Math.cos(ad), y: rRelief * Math.sin(ad) });
+              ptsNominal.push({ x: rRelief * Math.cos(ad), y: rRelief * Math.sin(ad) });
             }
-            nominalPts.push({ x: rRelief * Math.cos(aLeft), y: rRelief * Math.sin(aLeft) });
+            ptsNominal.push({ x: rRelief * Math.cos(aLeft), y: rRelief * Math.sin(aLeft) });
           } else {
-            nominalPts.push({ x: rf * Math.cos(midRoot), y: rf * Math.sin(midRoot) });
+            ptsNominal.push({ x: rf * Math.cos(midRoot), y: rf * Math.sin(midRoot) });
           }
         }
 
-        // Profil Kompensasi CNC (Offset keluar untuk gigi, offset masuk untuk lubang as)
-        const hk = state.endmillDia / 2;
-        const cutPts = hk > 0 ? offsetPolygonOutward(nominalPts, hk) : nominalPts;
+        const kerf = state.endmillDia / 2;
+        const ptsCut = ptsNominal.map((p, idx) => {
+          const prev = ptsNominal[(idx - 1 + ptsNominal.length) % ptsNominal.length];
+          const next = ptsNominal[(idx + 1) % ptsNominal.length];
+          const dx = next.x - prev.x;
+          const dy = next.y - prev.y;
+          const len = Math.hypot(dx, dy) || 1;
+          const nx = dy / len;
+          const ny = -dx / len;
+          return { x: p.x + nx * kerf, y: p.y + ny * kerf };
+        });
 
         const boreNominal = buildBoreContour(boreDia, shaftShape, flatDim, 0);
-        const boreDiaCut = boreDia > 0 ? Math.max(0.1, boreDia - state.endmillDia) : 0;
-        const flatCut = shaftShape === 'SINGLE_D'
-          ? Math.max(0.05, flatDim - hk)
-          : (shaftShape === 'DOUBLE_D' ? Math.max(0.05, flatDim - state.endmillDia) : flatDim);
-        const boreCut = boreDiaCut > 0
-          ? buildBoreContour(boreDiaCut, shaftShape, flatCut, state.endmillDia)
-          : [];
+        const boreCut = buildBoreContour(
+          Math.max(0.2, boreDia - state.endmillDia),
+          shaftShape,
+          Math.max(0.15, flatDim - state.endmillDia),
+          state.endmillDia
+        );
 
-        // Lubang Baut PCD
         const boltsNominal = [];
         const boltsCut = [];
-        if (boltCount > 0 && boltDia > 0 && boltPcd > 0) {
+        if (boltCount > 0 && boltDia > 0.2 && boltPcd > boreDia + boltDia + 1) {
           const rPcd = boltPcd / 2;
-          for (let b = 0; b < boltCount; b++) {
-            const a = (b * 2 * Math.PI) / boltCount;
+          for (let i = 0; i < boltCount; i++) {
+            const a = (i * 2 * Math.PI) / boltCount;
             const bx = rPcd * Math.cos(a);
             const by = rPcd * Math.sin(a);
             boltsNominal.push({ x: bx, y: by, r: boltDia / 2 });
-            boltsCut.push({ x: bx, y: by, r: Math.max(0.05, boltDia / 2 - hk) });
+            boltsCut.push({ x: bx, y: by, r: Math.max(0.15, (boltDia - state.endmillDia) / 2) });
           }
         }
 
         return {
-          m, z, alphaDeg, x,
-          Dp, Db, Da, Df,
-          rp, rb, ra, rf,
-          canDogboneRoot,
-          nominalPts, cutPts,
+          z, rp, rb, ra, rf,
+          ptsNominal, ptsCut,
           boreNominal, boreCut,
-          boltsNominal, boltsCut
+          boltsNominal, boltsCut,
+          canDogboneRoot
         };
       }
 
       function computeGearAssembly() {
-        const g1 = buildGearData(
-          state.module, state.z1, state.pressureAngle, state.x1,
-          state.bore1, state.gearShaft1, state.gearFlat1, 0, 0, 0
-        );
-        const g2 = buildGearData(
-          state.module, state.z2, state.pressureAngle, state.x2,
-          state.bore2, state.gearShaft2, state.gearFlat2,
-          state.boltCount2, state.boltDia2, state.boltPcd2
-        );
-
-        const stdCenter = (state.module * (state.z1 + state.z2)) / 2;
-        const shiftOffset = state.module * (state.x1 + state.x2);
-        const centerDist = stdCenter + shiftOffset + state.backlash * 0.5;
-        const ratio = state.z2 / Math.max(1, state.z1);
-
-        return { g1, g2, centerDist, ratio };
+        const g1 = buildGearSingle(state.module, state.z1, state.x1, state.bore1, state.gearShaft1, state.gearFlat1, 0, 0, 0);
+        const g2 = buildGearSingle(state.module, state.z2, state.x2, state.bore2, state.gearShaft2, state.gearFlat2, state.boltCount2, state.boltDia2, state.boltPcd2);
+        const centerDist = (state.module * (state.z1 + state.z2)) / 2 + state.module * (state.x1 + state.x2);
+        return { g1, g2, centerDist };
       }
 
-      /* =====================================================================
-         4. GENERATOR VELG & BAN SILIKON
-         ===================================================================== */
       function buildRimAssembly() {
-        const hk = state.endmillDia / 2;
         const tireR = state.tireOD / 2;
         const rimR = state.rimOD / 2;
-        const rimRCut = rimR + hk;
-
+        const rimRCut = rimR + state.endmillDia / 2;
         const boreNominal = buildBoreContour(state.rimBore, state.rimShaft, state.rimFlat, 0);
-        const rimBoreCutDia = Math.max(0.2, state.rimBore - state.endmillDia);
-        const rimFlatCut = state.rimShaft === 'SINGLE_D'
-          ? Math.max(0.1, state.rimFlat - hk)
-          : (state.rimShaft === 'DOUBLE_D' ? Math.max(0.1, state.rimFlat - state.endmillDia) : state.rimFlat);
-        const boreCut = buildBoreContour(rimBoreCutDia, state.rimShaft, rimFlatCut, state.endmillDia);
+        const boreCut = buildBoreContour(
+          Math.max(0.4, state.rimBore - state.endmillDia),
+          state.rimShaft,
+          Math.max(0.2, state.rimFlat - state.endmillDia),
+          state.endmillDia
+        );
 
         const pinsNominal = [];
         const pinsCut = [];
-        if (state.rimPinCount > 0 && state.rimPinDia > 0 && state.rimPinPcd > 0) {
-          const rPcd = state.rimPinPcd / 2;
+        if (state.rimPinCount > 0 && state.rimPinDia > 0.2) {
+          const rPcd = Math.min(rimR - state.rimPinDia, Math.max(state.rimBore / 2 + state.rimPinDia + 1, state.rimPinPcd / 2));
           for (let i = 0; i < state.rimPinCount; i++) {
             const a = (i * 2 * Math.PI) / state.rimPinCount;
             const px = rPcd * Math.cos(a);
             const py = rPcd * Math.sin(a);
             pinsNominal.push({ x: px, y: py, r: state.rimPinDia / 2 });
-            pinsCut.push({ x: px, y: py, r: Math.max(0.05, state.rimPinDia / 2 - hk) });
+            pinsCut.push({ x: px, y: py, r: Math.max(0.15, (state.rimPinDia - state.endmillDia) / 2) });
           }
         }
 
         const wallThickness = Math.max(0, (state.tireOD - state.rimOD) / 2);
+        const grooveR = Math.max(state.rimBore / 2 + 2, rimR - state.rimGrooveDepth);
+        const moldInnerR = tireR;
+        const moldInnerRCut = Math.max(2, tireR - state.endmillDia / 2);
+        const moldOuterR = tireR + state.moldWall;
+        const moldOuterRCut = moldOuterR + state.endmillDia / 2;
+        const moldBoltPcdR = tireR + state.moldWall * 0.52;
+        const moldBoltsNominal = [];
+        const moldBoltsCut = [];
+        for (let i = 0; i < state.moldBolts; i++) {
+          const a = (i * 2 * Math.PI) / state.moldBolts + Math.PI / 4;
+          const bx = moldBoltPcdR * Math.cos(a);
+          const by = moldBoltPcdR * Math.sin(a);
+          moldBoltsNominal.push({ x: bx, y: by, r: state.moldBoltDia / 2 });
+          moldBoltsCut.push({ x: bx, y: by, r: Math.max(0.2, (state.moldBoltDia - state.endmillDia) / 2) });
+        }
+
+        const sheetT = state.acrylicThick || 3;
+        const cavityLayers = Math.max(1, Math.round(state.tireW / sheetT));
+        const actualCavityH = cavityLayers * sheetT;
+        const flangeLayers = Math.max(1, Math.round(state.rimFlange / sheetT));
+        const coreLayers = Math.max(1, Math.round((state.tireW - 2 * flangeLayers * sheetT) / sheetT));
+
         return {
-          tireR, rimR, rimRCut,
+          tireR, rimR, rimRCut, grooveR,
           boreNominal, boreCut,
           pinsNominal, pinsCut,
-          wallThickness
+          wallThickness,
+          moldInnerR, moldInnerRCut, moldOuterR, moldOuterRCut,
+          moldBoltsNominal, moldBoltsCut,
+          sheetT, cavityLayers, actualCavityH, flangeLayers, coreLayers
         };
       }
 
+      function updateTelemetryUI(gearAsm, rimAsm) {
+        const ratio = state.z2 / Math.max(1, state.z1);
+        if (dom.badgeGearRatio) dom.badgeGearRatio.textContent = `1 : ${ratio.toFixed(2)}`;
+        if (dom.tagPinionOD) dom.tagPinionOD.textContent = `OD ${(gearAsm.g1.ra * 2).toFixed(2)} mm`;
+        if (dom.tagSpurOD) dom.tagSpurOD.textContent = `OD ${(gearAsm.g2.ra * 2).toFixed(2)} mm`;
+        if (dom.badgeTireWall) dom.badgeTireWall.textContent = `Tebal ${rimAsm.wallThickness.toFixed(1)} mm`;
+        if (dom.tagMoldOD) dom.tagMoldOD.textContent = `Mold OD ${(rimAsm.moldOuterR * 2).toFixed(1)} mm`;
+        if (dom.lblKerfOffset) dom.lblKerfOffset.textContent = `Offset ±${(state.endmillDia / 2).toFixed(2)} mm`;
+
+        if (dom.dogboneStatusBox) {
+          if (state.endmillDia <= 0.12) {
+            dom.dogboneStatusBox.innerHTML = `<span class="text-slate-400 font-semibold">Endmill 0.00 mm (Laser/Nominal):</span> Kontur dipotong sesuai garis nominal tanpa coakan dogbone.`;
+          } else if (gearAsm.g1.canDogboneRoot && gearAsm.g2.canDogboneRoot) {
+            dom.dogboneStatusBox.innerHTML = `<span class="text-emerald-400 font-bold">✓ Dogbone Akar Gigi &amp; Sudut D-Shaft Aktif</span><br/>Coakan radius <strong>${(state.endmillDia / 2).toFixed(2)} mm</strong> diterapkan pada lembah akar gigi involute dan sudut tajam lubang poros D-Shaft.`;
+          } else {
+            dom.dogboneStatusBox.innerHTML = `<span class="text-amber-400 font-bold">⚠ Endmill Ø ${state.endmillDia.toFixed(2)} mm terlalu lebar untuk akar gigi M${state.module}</span><br/>Dogbone D-Shaft tetap aktif, namun dogbone akar gigi dilewati agar tidak memakan profil involute.`;
+          }
+        }
+
+        if (dom.gearTelemetry) {
+          dom.gearTelemetry.innerHTML = `
+            <div class="flex justify-between"><span>Rasio Reduksi:</span><span class="text-emerald-400 font-bold">1 : ${ratio.toFixed(2)}</span></div>
+            <div class="flex justify-between"><span>Jarak Antar-As (C):</span><span class="text-sky-300 font-bold">${gearAsm.centerDist.toFixed(3)} mm</span></div>
+            <div class="flex justify-between"><span>Pitch Circle (Z1 / Z2):</span><span>${(gearAsm.g1.rp * 2).toFixed(2)} / ${(gearAsm.g2.rp * 2).toFixed(2)} mm</span></div>
+          `;
+        }
+
+        if (dom.rimTelemetry) {
+          dom.rimTelemetry.innerHTML = `
+            <div class="flex justify-between"><span>Tebal Dinding Ban Silikon:</span><span class="text-emerald-400 font-bold">${rimAsm.wallThickness.toFixed(2)} mm</span></div>
+            <div class="flex justify-between"><span>Pola Velg (3 Pola Terpisah):</span><span class="text-sky-300 font-bold">2× Tepi (Flange) + 1× Center</span></div>
+            <div class="flex justify-between"><span>Pola Mold (${rimAsm.sheetT}mm):</span><span class="text-amber-300 font-bold">1× Alas + ${rimAsm.cavityLayers}× Ring + 1× Tutup</span></div>
+            <div class="flex justify-between"><span>Total Kepingan Cutting:</span><span class="text-white font-bold">${3 + rimAsm.cavityLayers + 2} Keping (${rimAsm.cavityLayers + 5} Pola)</span></div>
+          `;
+        }
+      }
+
       /* =====================================================================
-         5. RENDERING KANVAS CAD 2D PRESISI (A4 297×210 MM)
+         5. RENDERING KANVAS CAD 2D PRESISI (A4 297×210 MM + AUTO-FIT)
          ===================================================================== */
       function drawClosedPoly(ctx, pts, cx, cy, rotRad) {
         if (!pts || pts.length < 3) return;
         const cosR = Math.cos(rotRad);
         const sinR = Math.sin(rotRad);
-        for (let i = 0; i < pts.length; i++) {
-          const p = pts[i];
-          const x = cx + p.x * cosR - p.y * sinR;
-          const y = cy + p.x * sinR + p.y * cosR;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
+        pts.forEach((p, idx) => {
+          const rx = cx + p.x * cosR - p.y * sinR;
+          const ry = cy + p.x * sinR + p.y * cosR;
+          if (idx === 0) ctx.moveTo(rx, ry);
+          else ctx.lineTo(rx, ry);
+        });
         ctx.closePath();
       }
 
-      function renderGearPart(ctx, g, cx, cy, rotRad, fillCol, strokeCol) {
+      function renderGearPart(ctx, g, cx, cy, rotRad, fillColor, strokeColor) {
         const useCut = state.showCutProfile && state.endmillDia > 0;
-        const outerPts = useCut ? g.cutPts : g.nominalPts;
+        const outerPts = useCut ? g.ptsCut : g.ptsNominal;
         const borePts = useCut ? g.boreCut : g.boreNominal;
         const bolts = useCut ? g.boltsCut : g.boltsNominal;
 
-        // Isi badan gear dengan lubang tengah & baut (even-odd winding)
         ctx.beginPath();
         drawClosedPoly(ctx, outerPts, cx, cy, rotRad);
         if (borePts.length > 2) {
           drawClosedPoly(ctx, [...borePts].reverse(), cx, cy, rotRad);
         }
-        const cosR = Math.cos(rotRad);
-        const sinR = Math.sin(rotRad);
         bolts.forEach((b) => {
+          const cosR = Math.cos(rotRad);
+          const sinR = Math.sin(rotRad);
           const bx = cx + b.x * cosR - b.y * sinR;
           const by = cy + b.x * sinR + b.y * cosR;
           ctx.moveTo(bx + b.r, by);
           ctx.arc(bx, by, b.r, 0, Math.PI * 2, true);
         });
-
-        ctx.fillStyle = fillCol;
+        ctx.fillStyle = fillColor;
         ctx.fill('evenodd');
 
-        // Garis kontur gigi
         ctx.beginPath();
         drawClosedPoly(ctx, outerPts, cx, cy, rotRad);
-        ctx.strokeStyle = strokeCol;
+        ctx.strokeStyle = strokeColor;
         ctx.lineWidth = 0.28;
         ctx.stroke();
 
-        // Garis profil nominal tipis jika kompensasi CNC aktif
-        if (useCut) {
-          ctx.beginPath();
-          drawClosedPoly(ctx, g.nominalPts, cx, cy, rotRad);
-          ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
-          ctx.lineWidth = 0.16;
-          ctx.setLineDash([0.8, 0.6]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
+        ctx.beginPath();
+        ctx.arc(cx, cy, g.rp, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+        ctx.lineWidth = 0.16;
+        ctx.setLineDash([1.2, 1.0]);
+        ctx.stroke();
+        ctx.setLineDash([]);
 
-        // Garis kontur Bore / D-Shaft
         if (borePts.length > 2) {
           ctx.beginPath();
           drawClosedPoly(ctx, borePts, cx, cy, rotRad);
@@ -978,91 +978,204 @@
           ctx.stroke();
         }
 
-        // Garis lubang baut
         bolts.forEach((b) => {
+          const cosR = Math.cos(rotRad);
+          const sinR = Math.sin(rotRad);
           const bx = cx + b.x * cosR - b.y * sinR;
           const by = cy + b.x * sinR + b.y * cosR;
           ctx.beginPath();
           ctx.arc(bx, by, b.r, 0, Math.PI * 2);
-          ctx.strokeStyle = '#f43f5e';
+          ctx.strokeStyle = '#34d399';
           ctx.lineWidth = 0.24;
           ctx.stroke();
         });
-
-        // Pitch circle referensi
-        ctx.beginPath();
-        ctx.arc(cx, cy, g.rp, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
-        ctx.lineWidth = 0.16;
-        ctx.setLineDash([1.5, 1.2]);
-        ctx.stroke();
-        ctx.setLineDash([]);
       }
 
-      function renderRimPart(ctx, rim, cx, cy) {
+      function renderRimPart(ctx, rimAsm, cx, cy, showMoldAndCrossSection) {
         const useCut = state.showCutProfile && state.endmillDia > 0;
-        const rimR = useCut ? rim.rimRCut : rim.rimR;
-        const borePts = useCut ? rim.boreCut : rim.boreNominal;
-        const pins = useCut ? rim.pinsCut : rim.pinsNominal;
+        const rimR = useCut ? rimAsm.rimRCut : rimAsm.rimR;
+        const grooveRCut = useCut ? rimAsm.grooveR + state.endmillDia / 2 : rimAsm.grooveR;
+        const borePts = useCut ? rimAsm.boreCut : rimAsm.boreNominal;
+        const pins = useCut ? rimAsm.pinsCut : rimAsm.pinsNominal;
+        const mOutR = useCut ? rimAsm.moldOuterRCut : rimAsm.moldOuterR;
+        const mInR = useCut ? rimAsm.moldInnerRCut : rimAsm.moldInnerR;
+        const mBolts = useCut ? rimAsm.moldBoltsCut : rimAsm.moldBoltsNominal;
 
-        // Ban Silikon Luar (zona cincin)
-        ctx.beginPath();
-        ctx.arc(cx, cy, rim.tireR, 0, Math.PI * 2, false);
-        ctx.arc(cx, cy, rim.rimR, 0, Math.PI * 2, true);
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.14)';
-        ctx.fill('evenodd');
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, rim.tireR, 0, Math.PI * 2);
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 0.3;
-        ctx.setLineDash([2, 1.2]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Badan Velg (dengan lubang as & lubang pin pengunci silikon)
-        ctx.beginPath();
-        ctx.arc(cx, cy, rimR, 0, Math.PI * 2, false);
-        if (borePts.length > 2) {
-          drawClosedPoly(ctx, [...borePts].reverse(), cx, cy, 0);
-        }
-        pins.forEach((p) => {
-          ctx.moveTo(cx + p.x + p.r, cy + p.y);
-          ctx.arc(cx + p.x, cy + p.y, p.r, 0, Math.PI * 2, true);
-        });
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.18)';
-        ctx.fill('evenodd');
-
-        // Kontur luar Velg
-        ctx.beginPath();
-        ctx.arc(cx, cy, rimR, 0, Math.PI * 2);
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 0.32;
-        ctx.stroke();
-
-        // Kontur Bore D-Shaft Velg
-        if (borePts.length > 2) {
+        const drawVelgDisc = (px, py, outerR, title, subtitle, strokeCol, fillCol) => {
           ctx.beginPath();
-          drawClosedPoly(ctx, borePts, cx, cy, 0);
-          ctx.strokeStyle = '#f43f5e';
+          ctx.arc(px, py, outerR, 0, Math.PI * 2);
+          if (borePts.length > 2) {
+            drawClosedPoly(ctx, [...borePts].reverse(), px, py, 0);
+          }
+          pins.forEach((p) => {
+            ctx.moveTo(px + p.x + p.r, py + p.y);
+            ctx.arc(px + p.x, py + p.y, p.r, 0, Math.PI * 2, true);
+          });
+          ctx.fillStyle = fillCol;
+          ctx.fill('evenodd');
+
+          ctx.beginPath();
+          ctx.arc(px, py, outerR, 0, Math.PI * 2);
+          ctx.strokeStyle = strokeCol;
+          ctx.lineWidth = 0.42;
+          ctx.stroke();
+
+          if (borePts.length > 2) {
+            ctx.beginPath();
+            drawClosedPoly(ctx, borePts, px, py, 0);
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 0.36;
+            ctx.stroke();
+          }
+
+          pins.forEach((p) => {
+            ctx.beginPath();
+            ctx.arc(px + p.x, py + p.y, p.r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 0.30;
+            ctx.stroke();
+          });
+
+          ctx.fillStyle = strokeCol;
+          ctx.font = 'bold 2.7px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(title, px, py + outerR + 4.8);
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText(subtitle, px, py + outerR + 8.2);
+        };
+
+        // BARIS ATAS: 3 POLA VELG TERPISAH (TEPI 1, CENTER, TEPI 2)
+        const topY = cy - 42;
+        const stepVelgX = rimAsm.rimR * 2 + 12;
+        drawVelgDisc(cx, topY, rimR, '1. VELG TEPI A (Flange)', `OD ${state.rimOD.toFixed(1)}mm • 1 pcs`, '#38bdf8', 'rgba(56, 189, 248, 0.16)');
+        drawVelgDisc(cx + stepVelgX, topY, grooveRCut, '2. VELG CENTER (Alur)', `OD ${(rimAsm.grooveR * 2).toFixed(1)}mm • ${rimAsm.coreLayers} pcs`, '#fbbf24', 'rgba(251, 191, 36, 0.16)');
+        drawVelgDisc(cx + stepVelgX * 2, topY, rimR, '3. VELG TEPI B (Flange)', `OD ${state.rimOD.toFixed(1)}mm • 1 pcs`, '#38bdf8', 'rgba(56, 189, 248, 0.16)');
+
+        if (!showMoldAndCrossSection) return;
+
+        // BARIS BAWAH: POLA LENGKAP MOLDING AKRILIK (ALAS, RING CAVITY, TUTUP + TUANG, DIAGRAM SUSUNAN)
+        const botY = cy + 44;
+        const stepMoldX = rimAsm.moldOuterR * 2 + 10;
+
+        // Pola Mold 1: Pelat Alas Bawah
+        const m1X = cx + 6;
+        ctx.beginPath();
+        ctx.arc(m1X, botY, mOutR, 0, Math.PI * 2);
+        if (borePts.length > 2) drawClosedPoly(ctx, [...borePts].reverse(), m1X, botY, 0);
+        mBolts.forEach((b) => {
+          ctx.moveTo(m1X + b.x + b.r, botY + b.y);
+          ctx.arc(m1X + b.x, botY + b.y, b.r, 0, Math.PI * 2, true);
+        });
+        ctx.fillStyle = 'rgba(167, 139, 250, 0.14)';
+        ctx.fill('evenodd');
+        ctx.beginPath(); ctx.arc(m1X, botY, mOutR, 0, Math.PI * 2); ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 0.42; ctx.stroke();
+        if (borePts.length > 2) { ctx.beginPath(); drawClosedPoly(ctx, borePts, m1X, botY, 0); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.34; ctx.stroke(); }
+        mBolts.forEach((b) => { ctx.beginPath(); ctx.arc(m1X + b.x, botY + b.y, b.r, 0, Math.PI * 2); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.30; ctx.stroke(); });
+        ctx.fillStyle = '#a78bfa'; ctx.font = 'bold 2.7px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('4. MOLD ALAS BAWAH', m1X, botY + mOutR + 4.8);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`1 pcs (${rimAsm.sheetT}mm)`, m1X, botY + mOutR + 8.2);
+
+        // Pola Mold 2: Ring Cavity
+        const m2X = m1X + stepMoldX;
+        ctx.beginPath();
+        ctx.arc(m2X, botY, mOutR, 0, Math.PI * 2);
+        ctx.arc(m2X, botY, mInR, 0, Math.PI * 2, true);
+        mBolts.forEach((b) => {
+          ctx.moveTo(m2X + b.x + b.r, botY + b.y);
+          ctx.arc(m2X + b.x, botY + b.y, b.r, 0, Math.PI * 2, true);
+        });
+        ctx.fillStyle = 'rgba(52, 211, 153, 0.16)';
+        ctx.fill('evenodd');
+        ctx.beginPath(); ctx.arc(m2X, botY, mOutR, 0, Math.PI * 2); ctx.strokeStyle = '#34d399'; ctx.lineWidth = 0.42; ctx.stroke();
+        ctx.beginPath(); ctx.arc(m2X, botY, mInR, 0, Math.PI * 2); ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 0.42; ctx.stroke();
+        mBolts.forEach((b) => { ctx.beginPath(); ctx.arc(m2X + b.x, botY + b.y, b.r, 0, Math.PI * 2); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.30; ctx.stroke(); });
+        ctx.fillStyle = '#34d399';
+        ctx.fillText('5. MOLD RING CAVITY', m2X, botY + mOutR + 4.8);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`${rimAsm.cavityLayers} pcs × ${rimAsm.sheetT}mm`, m2X, botY + mOutR + 8.2);
+
+        // Pola Mold 3: Pelat Tutup Atas (dengan Lubang Tuang Silikon & Air Vent)
+        const m3X = m2X + stepMoldX;
+        ctx.beginPath();
+        ctx.arc(m3X, botY, mOutR, 0, Math.PI * 2);
+        if (borePts.length > 2) drawClosedPoly(ctx, [...borePts].reverse(), m3X, botY, 0);
+        mBolts.forEach((b) => {
+          ctx.moveTo(m3X + b.x + b.r, botY + b.y);
+          ctx.arc(m3X + b.x, botY + b.y, b.r, 0, Math.PI * 2, true);
+        });
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.14)';
+        ctx.fill('evenodd');
+        ctx.beginPath(); ctx.arc(m3X, botY, mOutR, 0, Math.PI * 2); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 0.42; ctx.stroke();
+        if (borePts.length > 2) { ctx.beginPath(); drawClosedPoly(ctx, borePts, m3X, botY, 0); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.34; ctx.stroke(); }
+        mBolts.forEach((b) => { ctx.beginPath(); ctx.arc(m3X + b.x, botY + b.y, b.r, 0, Math.PI * 2); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.30; ctx.stroke(); });
+
+        const gatePcd = (rimAsm.rimR + rimAsm.tireR) / 2;
+        const gateR = Math.max(0.5, (state.pourGateDia - (useCut ? state.endmillDia : 0)) / 2);
+        [0, Math.PI].forEach((ga, idx) => {
+          const gx = m3X + gatePcd * Math.cos(ga);
+          const gy = botY + gatePcd * Math.sin(ga);
+          ctx.beginPath();
+          ctx.arc(gx, gy, idx === 0 ? gateR : Math.max(0.6, gateR * 0.65), 0, Math.PI * 2);
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 0.36;
+          ctx.stroke();
+        });
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText('6. MOLD TUTUP + TUANG', m3X, botY + mOutR + 4.8);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`1 pcs (${rimAsm.sheetT}mm) + Gate`, m3X, botY + mOutR + 8.2);
+
+        // Diagram Potongan Samping Tumpukan
+        const sx = m3X + mOutR + 22;
+        const sy = (topY + botY) / 2;
+        const sheetT = rimAsm.sheetT;
+        const totalStackH = (rimAsm.cavityLayers + 2) * sheetT;
+        const startY = sy - totalStackH / 2;
+
+        for (let layer = 0; layer < rimAsm.cavityLayers + 2; layer++) {
+          const ly = startY + layer * sheetT;
+          const isCap = layer === 0 || layer === rimAsm.cavityLayers + 1;
+          ctx.fillStyle = isCap ? 'rgba(167, 139, 250, 0.25)' : 'rgba(52, 211, 153, 0.22)';
+          ctx.strokeStyle = isCap ? '#a78bfa' : '#34d399';
           ctx.lineWidth = 0.3;
-          ctx.stroke();
-        }
 
-        // Lubang Pin Silikon
-        pins.forEach((p) => {
-          ctx.beginPath();
-          ctx.arc(cx + p.x, cy + p.y, p.r, 0, Math.PI * 2);
-          ctx.strokeStyle = '#34d399';
-          ctx.lineWidth = 0.25;
-          ctx.stroke();
-        });
+          if (isCap) {
+            ctx.fillRect(sx - rimAsm.moldOuterR, ly, rimAsm.moldOuterR - state.rimBore / 2, sheetT);
+            ctx.strokeRect(sx - rimAsm.moldOuterR, ly, rimAsm.moldOuterR - state.rimBore / 2, sheetT);
+            ctx.fillRect(sx + state.rimBore / 2, ly, rimAsm.moldOuterR - state.rimBore / 2, sheetT);
+            ctx.strokeRect(sx + state.rimBore / 2, ly, rimAsm.moldOuterR - state.rimBore / 2, sheetT);
+          } else {
+            ctx.fillRect(sx - rimAsm.moldOuterR, ly, rimAsm.moldWall, sheetT);
+            ctx.strokeRect(sx - rimAsm.moldOuterR, ly, rimAsm.moldWall, sheetT);
+            ctx.fillRect(sx + rimAsm.tireR, ly, rimAsm.moldWall, sheetT);
+            ctx.strokeRect(sx + rimAsm.tireR, ly, rimAsm.moldWall, sheetT);
+
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.25)';
+            ctx.strokeStyle = '#fbbf24';
+            ctx.fillRect(sx - rimAsm.tireR, ly, rimAsm.wallThickness, sheetT);
+            ctx.strokeRect(sx - rimAsm.tireR, ly, rimAsm.wallThickness, sheetT);
+            ctx.fillRect(sx + rimAsm.rimR, ly, rimAsm.wallThickness, sheetT);
+            ctx.strokeRect(sx + rimAsm.rimR, ly, rimAsm.wallThickness, sheetT);
+
+            const isFlange = layer === 1 || layer === rimAsm.cavityLayers;
+            const innerRimEdge = isFlange ? rimAsm.rimR : rimAsm.grooveR;
+            ctx.fillStyle = isFlange ? 'rgba(56, 189, 248, 0.32)' : 'rgba(251, 191, 36, 0.32)';
+            ctx.strokeStyle = isFlange ? '#38bdf8' : '#fbbf24';
+            ctx.fillRect(sx - innerRimEdge, ly, innerRimEdge - state.rimBore / 2, sheetT);
+            ctx.strokeRect(sx - innerRimEdge, ly, innerRimEdge - state.rimBore / 2, sheetT);
+            ctx.fillRect(sx + state.rimBore / 2, ly, innerRimEdge - state.rimBore / 2, sheetT);
+            ctx.strokeRect(sx + state.rimBore / 2, ly, innerRimEdge - state.rimBore / 2, sheetT);
+          }
+        }
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillText(`DIAGRAM RAKITAN (${rimAsm.cavityLayers + 2} Lapis)`, sx, sy + totalStackH / 2 + 5.5);
       }
 
       function renderCanvas() {
         if (!dom.canvas) return;
         const rect = dom.canvas.getBoundingClientRect();
-        const w = Math.max(260, rect.width);
+        const w = Math.max(240, rect.width);
         const h = Math.max(180, rect.height);
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -1071,30 +1184,64 @@
           dom.canvas.height = Math.round(h * dpr);
         }
 
+        const gearAsm = computeGearAssembly();
+        const rimAsm = buildRimAssembly();
+        updateTelemetryUI(gearAsm, rimAsm);
+
         const ctx = dom.canvas.getContext('2d');
         ctx.save();
         ctx.scale(dpr, dpr);
-
-        // Latar gelap luar kertas
-        ctx.fillStyle = '#060a14';
+        ctx.fillStyle = '#070c18';
         ctx.fillRect(0, 0, w, h);
 
-        // Hitung transformasi A4 (297 x 210 mm)
-        const baseScale = Math.min(w / 297, h / 210) * 0.92;
-        const scale = baseScale * state.zoom;
-        const offsetX = (w - 297 * scale) / 2 + state.panX;
-        const offsetY = (h - 210 * scale) / 2 + state.panY;
+        let boxX = 0, boxY = 0, boxW = 297, boxH = 210;
+        const gx1 = 68, gy1 = 105;
+        const gx2 = state.layoutMode === 'cut'
+          ? Math.min(242, gx1 + gearAsm.g1.ra + gearAsm.g2.ra + 12)
+          : gx1 + gearAsm.centerDist;
 
-        ctx.translate(offsetX, offsetY);
+        if (state.autoFit) {
+          if (state.activeModule === 'gear') {
+            const minX = gx1 - gearAsm.g1.ra - 6;
+            const maxX = gx2 + gearAsm.g2.ra + 6;
+            const maxR = Math.max(gearAsm.g1.ra, gearAsm.g2.ra) + 6;
+            boxX = minX;
+            boxY = gy1 - maxR;
+            boxW = Math.max(20, maxX - minX);
+            boxH = Math.max(20, maxR * 2);
+          } else if (state.activeModule === 'rim') {
+            const cx = 36;
+            const stepMoldX = rimAsm.moldOuterR * 2 + 10;
+            const m3X = (cx + 6) + stepMoldX * 2;
+            const sx = m3X + rimAsm.moldOuterR + 22;
+            const minX = cx - Math.max(rimAsm.rimR, rimAsm.moldOuterR) - 6;
+            const maxX = sx + rimAsm.moldOuterR + 8;
+            boxX = minX;
+            boxY = 12;
+            boxW = Math.max(60, maxX - minX);
+            boxH = 186;
+          }
+          state.zoom = 1.0;
+          state.panX = 0;
+          state.panY = 0;
+        }
+
+        const baseScale = Math.min((w * 0.90) / boxW, (h * 0.88) / boxH);
+        const scale = baseScale * state.zoom;
+        const ox = w / 2 - (boxX + boxW / 2) * scale + state.panX;
+        const oy = h / 2 - (boxY + boxH / 2) * scale + state.panY;
+
+        ctx.translate(ox, oy);
         ctx.scale(scale, scale);
 
-        // Lembar Kertas A4 (297 x 210 mm)
-        ctx.fillStyle = '#0c1527';
+        // Lembar A4 (297 x 210 mm)
+        ctx.fillStyle = '#0b1324';
         ctx.fillRect(0, 0, 297, 210);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(0, 0, 297, 210);
 
         // Grid 10 mm
-        ctx.strokeStyle = 'rgba(51, 65, 85, 0.28)';
-        ctx.lineWidth = 0.15;
         ctx.beginPath();
         for (let gx = 10; gx < 297; gx += 10) {
           ctx.moveTo(gx, 0);
@@ -1104,115 +1251,58 @@
           ctx.moveTo(0, gy);
           ctx.lineTo(297, gy);
         }
+        ctx.strokeStyle = 'rgba(51, 65, 85, 0.25)';
+        ctx.lineWidth = 0.2;
         ctx.stroke();
 
-        // Garis tepi A4
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 0.45;
-        ctx.strokeRect(0, 0, 297, 210);
-
-        const gearAsm = computeGearAssembly();
-        const rimAsm = buildRimAssembly();
-
-        // Update UI Telemetri & Status Dogbone
-        updateTelemetryUI(gearAsm, rimAsm);
-
-        const r1 = deg2rad(state.spinAngleDeg);
-        const r2 = state.layoutMode === 'cut'
+        const rot1 = deg2rad(state.spinAngleDeg);
+        const rot2 = state.layoutMode === 'cut'
           ? 0
-          : (Math.PI / gearAsm.g2.z) - r1 * (gearAsm.g1.z / gearAsm.g2.z);
+          : Math.PI / state.z2 - rot1 * (state.z1 / state.z2);
 
         if (state.activeModule === 'gear') {
-          const x1 = 78;
-          const y1 = 105;
-          const x2 = state.layoutMode === 'cut'
-            ? Math.min(235, x1 + gearAsm.g1.ra + gearAsm.g2.ra + 8)
-            : x1 + gearAsm.centerDist;
-          const y2 = 105;
-
-          renderGearPart(ctx, gearAsm.g1, x1, y1, r1, 'rgba(56, 189, 248, 0.20)', '#38bdf8');
-          renderGearPart(ctx, gearAsm.g2, x2, y2, r2, 'rgba(251, 191, 36, 0.18)', '#fbbf24');
-
-          // Garis ukur jarak antar-as (Center Distance)
-          ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
-          ctx.strokeStyle = 'rgba(248, 250, 252, 0.35)';
-          ctx.lineWidth = 0.2;
-          ctx.stroke();
-
+          renderGearPart(ctx, gearAsm.g1, gx1, gy1, rot1, 'rgba(56, 189, 248, 0.16)', '#38bdf8');
+          renderGearPart(ctx, gearAsm.g2, gx2, gy1, rot2, 'rgba(251, 191, 36, 0.14)', '#fbbf24');
           if (dom.hudBanner) {
-            dom.hudBanner.textContent = `GEAR M${state.module} (${state.z1}T : ${state.z2}T) • C = ${gearAsm.centerDist.toFixed(2)} mm • Endmill Ø${state.endmillDia.toFixed(2)} mm`;
+            dom.hudBanner.textContent = `Gear ${state.z1}T:${state.z2}T • M${state.module} • C=${gearAsm.centerDist.toFixed(2)}mm • Endmill Ø${state.endmillDia.toFixed(2)}mm`;
           }
         } else if (state.activeModule === 'rim') {
-          renderRimPart(ctx, rimAsm, 148.5, 105);
+          renderRimPart(ctx, rimAsm, 36, 105, true);
           if (dom.hudBanner) {
-            dom.hudBanner.textContent = `VELG OD ${state.rimOD} mm • BAN OD ${state.tireOD} mm • ${state.rimShaft} (Ø${state.rimBore} / Flat ${state.rimFlat})`;
+            dom.hudBanner.textContent = `3 Pola Velg + Mold Akrilik ${rimAsm.sheetT}mm (${rimAsm.cavityLayers + 2} Lapis) • ${state.rimShaft}`;
           }
         } else {
-          // Lembar Gabungan A4 (Pinion + Spur + Velg siap potong CNC)
-          const gx1 = 42;
-          const gy1 = 105;
-          const gx2 = gx1 + gearAsm.g1.ra + gearAsm.g2.ra + 8;
-          const gy2 = 105;
-          const rx = Math.min(252, gx2 + gearAsm.g2.ra + rimAsm.rimR + 10);
-          const ry = 105;
-
-          renderGearPart(ctx, gearAsm.g1, gx1, gy1, 0, 'rgba(56, 189, 248, 0.20)', '#38bdf8');
-          renderGearPart(ctx, gearAsm.g2, gx2, gy2, 0, 'rgba(251, 191, 36, 0.18)', '#fbbf24');
-          renderRimPart(ctx, rimAsm, rx, ry);
-
+          renderGearPart(ctx, gearAsm.g1, 36, 60, rot1, 'rgba(56, 189, 248, 0.16)', '#38bdf8');
+          renderGearPart(ctx, gearAsm.g2, 92, 105, rot2, 'rgba(251, 191, 36, 0.14)', '#fbbf24');
+          renderRimPart(ctx, rimAsm, 175, 105, false);
           if (dom.hudBanner) {
-            dom.hudBanner.textContent = `LEMBAR GABUNGAN A4 • Pinion ${state.z1}T + Spur ${state.z2}T + Velg ${state.rimOD}mm`;
+            dom.hudBanner.textContent = `Lembar Gabungan A4 (297×210 mm) • Gear ${state.z1}T:${state.z2}T + 3 Pola Velg`;
           }
         }
 
         ctx.restore();
       }
 
-      function updateTelemetryUI(gearAsm, rimAsm) {
-        if (dom.badgeGearRatio) dom.badgeGearRatio.textContent = `1 : ${gearAsm.ratio.toFixed(2)}`;
-        if (dom.tagPinionOD) dom.tagPinionOD.textContent = `OD ${gearAsm.g1.Da.toFixed(2)} mm`;
-        if (dom.tagSpurOD) dom.tagSpurOD.textContent = `OD ${gearAsm.g2.Da.toFixed(2)} mm`;
-        if (dom.lblKerfOffset) dom.lblKerfOffset.textContent = `Offset ±${(state.endmillDia / 2).toFixed(2)} mm`;
-        if (dom.badgeTireWall) dom.badgeTireWall.textContent = `Tebal ${rimAsm.wallThickness.toFixed(2)} mm`;
-
-        if (dom.gearTelemetry) {
-          dom.gearTelemetry.innerHTML = `
-            <div class="flex justify-between"><span>Rasio Reduksi:</span><span class="text-emerald-400 font-bold">1 : ${gearAsm.ratio.toFixed(2)}</span></div>
-            <div class="flex justify-between"><span>Jarak Antar-As (Center Dist):</span><span class="text-white font-bold">${gearAsm.centerDist.toFixed(3)} mm</span></div>
-            <div class="flex justify-between"><span>Pitch Dia (Dp1 / Dp2):</span><span>${gearAsm.g1.Dp.toFixed(2)} / ${gearAsm.g2.Dp.toFixed(2)} mm</span></div>
-            <div class="flex justify-between"><span>Root Dia (Df1 / Df2):</span><span>${gearAsm.g1.Df.toFixed(2)} / ${gearAsm.g2.Df.toFixed(2)} mm</span></div>
-          `;
-        }
-
-        if (dom.rimTelemetry) {
-          dom.rimTelemetry.innerHTML = `
-            <div class="flex justify-between"><span>Tebal Dinding Ban Silikon:</span><span class="text-emerald-400 font-bold">${rimAsm.wallThickness.toFixed(2)} mm</span></div>
-            <div class="flex justify-between"><span>Profil Poros Velg:</span><span class="text-sky-300 font-bold">${state.rimShaft} (Ø${state.rimBore} / Flat ${state.rimFlat})</span></div>
-            <div class="flex justify-between"><span>Pin Pengunci Silikon:</span><span>${state.rimPinCount}× Ø${state.rimPinDia} mm @ PCD ${state.rimPinPcd} mm</span></div>
-          `;
-        }
-
-        if (dom.dogboneStatusBox) {
-          if (state.endmillDia <= 0.12) {
-            dom.dogboneStatusBox.innerHTML = 'Mode nominal / laser (Ø 0.00 mm): tidak ada coakan <em>dogbone</em>.';
-          } else if (gearAsm.g1.canDogboneRoot && gearAsm.g2.canDogboneRoot) {
-            dom.dogboneStatusBox.innerHTML = `<span class="text-emerald-400 font-bold">✓ Dogbone Akar Gigi &amp; D-Shaft Aktif</span> — Coakan radius <strong>${(state.endmillDia / 2).toFixed(2)} mm</strong> diterapkan otomatis pada akar gigi &amp; sudut lubang poros.`;
-          } else {
-            dom.dogboneStatusBox.innerHTML = `<span class="text-amber-400 font-bold">⚠ Dogbone Akar Gigi Dilewati</span> — Ø Endmill (${state.endmillDia.toFixed(2)} mm) melebihi lebar celah akar Module ${state.module} mm; kompensasi offset ±${(state.endmillDia / 2).toFixed(2)} mm &amp; dogbone D-Shaft tetap aktif.`;
-          }
-        }
-      }
-
       /* =====================================================================
-         6. GENERATOR FILE AUTOCAD R12 (.DXF) — POLYLINE & CIRCLE PRESISI
+         6. GENERATOR EXPORT AUTOCAD R12 (.DXF) — AC1009 (MM)
          ===================================================================== */
-      function generateAutoCADR12Dxf(exportMode) {
+      function buildDxfContent(exportMode) {
+        const gearAsm = computeGearAssembly();
+        const rimAsm = buildRimAssembly();
+        const useCut = state.showCutProfile && state.endmillDia > 0;
         const lines = [];
         const add = (code, val) => {
           lines.push(String(code));
           lines.push(String(val));
+        };
+
+        const addCircle = (layer, cx, cy, r) => {
+          add(0, 'CIRCLE');
+          add(8, layer);
+          add(10, cx.toFixed(4));
+          add(20, cy.toFixed(4));
+          add(30, '0.0');
+          add(40, r.toFixed(4));
         };
 
         const addClosedPolyline = (layer, pts, cx, cy) => {
@@ -1220,89 +1310,95 @@
           add(0, 'POLYLINE');
           add(8, layer);
           add(66, 1);
-          add(70, 1); // 1 = Closed polyline
-          add(10, '0.0');
-          add(20, '0.0');
-          add(30, '0.0');
-          for (let i = 0; i < pts.length; i++) {
+          add(70, 1);
+          pts.forEach((p) => {
             add(0, 'VERTEX');
             add(8, layer);
-            add(10, (cx + pts[i].x).toFixed(6));
-            add(20, (cy + pts[i].y).toFixed(6));
+            add(10, (cx + p.x).toFixed(4));
+            add(20, (cy + p.y).toFixed(4));
             add(30, '0.0');
-          }
+          });
           add(0, 'SEQEND');
           add(8, layer);
         };
 
-        const addCircle = (layer, cx, cy, r) => {
-          if (!r || r <= 0.01) return;
-          add(0, 'CIRCLE');
-          add(8, layer);
-          add(10, cx.toFixed(6));
-          add(20, cy.toFixed(6));
-          add(30, '0.0');
-          add(40, r.toFixed(6));
-        };
-
-        // HEADER SECTION (AC1009 = AutoCAD R12, $INSUNITS 4 = mm)
-        add(0, 'SECTION');
-        add(2, 'HEADER');
-        add(9, '$ACADVER');
-        add(1, 'AC1009');
-        add(9, '$INSUNITS');
-        add(70, 4);
+        add(0, 'SECTION'); add(2, 'HEADER');
+        add(9, '$ACADVER'); add(1, 'AC1009');
+        add(9, '$INSUNITS'); add(70, 4);
         add(0, 'ENDSEC');
 
-        // ENTITIES SECTION
-        add(0, 'SECTION');
-        add(2, 'ENTITIES');
+        add(0, 'SECTION'); add(2, 'ENTITIES');
 
-        const gearAsm = computeGearAssembly();
-        const rimAsm = buildRimAssembly();
-        const useCut = state.endmillDia > 0;
+        const exportGearSet = (gx1, gy1, gx2, gy2) => {
+          const g1Pts = useCut ? gearAsm.g1.ptsCut : gearAsm.g1.ptsNominal;
+          const g1Bore = useCut ? gearAsm.g1.boreCut : gearAsm.g1.boreNominal;
+          addClosedPolyline('PINION_TEETH', g1Pts, gx1, gy1);
+          addClosedPolyline('BORE_HOLES', g1Bore, gx1, gy1);
 
-        const exportGearSet = (g1x, g1y, g2x, g2y) => {
-          const p1 = useCut ? gearAsm.g1.cutPts : gearAsm.g1.nominalPts;
-          const b1 = useCut ? gearAsm.g1.boreCut : gearAsm.g1.boreNominal;
-          addClosedPolyline('PINION_TEETH', p1, g1x, g1y);
-          addClosedPolyline('BORE_SHAFT', b1, g1x, g1y);
-
-          const p2 = useCut ? gearAsm.g2.cutPts : gearAsm.g2.nominalPts;
-          const b2 = useCut ? gearAsm.g2.boreCut : gearAsm.g2.boreNominal;
-          const bolts2 = useCut ? gearAsm.g2.boltsCut : gearAsm.g2.boltsNominal;
-          addClosedPolyline('SPUR_TEETH', p2, g2x, g2y);
-          addClosedPolyline('BORE_SHAFT', b2, g2x, g2y);
-          bolts2.forEach((b) => addCircle('BOLT_HOLES', g2x + b.x, g2y + b.y, b.r));
+          const g2Pts = useCut ? gearAsm.g2.ptsCut : gearAsm.g2.ptsNominal;
+          const g2Bore = useCut ? gearAsm.g2.boreCut : gearAsm.g2.boreNominal;
+          const g2Bolts = useCut ? gearAsm.g2.boltsCut : gearAsm.g2.boltsNominal;
+          addClosedPolyline('SPUR_TEETH', g2Pts, gx2, gy2);
+          addClosedPolyline('BORE_HOLES', g2Bore, gx2, gy2);
+          g2Bolts.forEach((b) => addCircle('SPUR_BOLT_HOLES', gx2 + b.x, gy2 + b.y, b.r));
         };
 
-        const exportRimSet = (rx, ry) => {
-          const rRim = useCut ? rimAsm.rimRCut : rimAsm.rimR;
-          const boreR = useCut ? rimAsm.boreCut : rimAsm.boreNominal;
-          const pinsR = useCut ? rimAsm.pinsCut : rimAsm.pinsNominal;
-          addCircle('TIRE_REF', rx, ry, rimAsm.tireR);
-          addCircle('RIM_OUTLINE', rx, ry, rRim);
-          addClosedPolyline('RIM_BORE_SHAFT', boreR, rx, ry);
-          pinsR.forEach((p) => addCircle('SILICON_PINS', rx + p.x, ry + p.y, p.r));
+        const exportRimSet = (rx, ry, includeMold) => {
+          const rOuter = useCut ? rimAsm.rimRCut : rimAsm.rimR;
+          const grooveRCut = useCut ? rimAsm.grooveR + state.endmillDia / 2 : rimAsm.grooveR;
+          const rBore = useCut ? rimAsm.boreCut : rimAsm.boreNominal;
+          const rPins = useCut ? rimAsm.pinsCut : rimAsm.pinsNominal;
+          const mOutR = useCut ? rimAsm.moldOuterRCut : rimAsm.moldOuterR;
+          const mInR = useCut ? rimAsm.moldInnerRCut : rimAsm.moldInnerR;
+          const mBolts = useCut ? rimAsm.moldBoltsCut : rimAsm.moldBoltsNominal;
+
+          const topY = ry - 42;
+          const stepVelgX = rimAsm.rimR * 2 + 12;
+          const velgPatterns = [
+            { x: rx, r: rOuter, layer: 'VELG_1_TEPI_A' },
+            { x: rx + stepVelgX, r: grooveRCut, layer: 'VELG_2_CENTER_ALUR' },
+            { x: rx + stepVelgX * 2, r: rOuter, layer: 'VELG_3_TEPI_B' }
+          ];
+          velgPatterns.forEach((vp) => {
+            addCircle(vp.layer, vp.x, topY, vp.r);
+            addClosedPolyline(`${vp.layer}_BORE`, rBore, vp.x, topY);
+            rPins.forEach((p) => addCircle(`${vp.layer}_PINS`, vp.x + p.x, topY + p.y, p.r));
+          });
+
+          if (!includeMold) return;
+
+          const botY = ry + 44;
+          const stepMoldX = rimAsm.moldOuterR * 2 + 10;
+          const m1X = rx + 6;
+          addCircle('MOLD_1_ALAS_OUTER', m1X, botY, mOutR);
+          addClosedPolyline('MOLD_1_ALAS_BORE', rBore, m1X, botY);
+          mBolts.forEach((b) => addCircle('MOLD_1_ALAS_BOLTS', m1X + b.x, botY + b.y, b.r));
+
+          const m2X = m1X + stepMoldX;
+          addCircle('MOLD_2_RING_OUTER', m2X, botY, mOutR);
+          addCircle('MOLD_2_RING_CAVITY', m2X, botY, mInR);
+          mBolts.forEach((b) => addCircle('MOLD_2_RING_BOLTS', m2X + b.x, botY + b.y, b.r));
+
+          const m3X = m2X + stepMoldX;
+          addCircle('MOLD_3_TUTUP_OUTER', m3X, botY, mOutR);
+          addClosedPolyline('MOLD_3_TUTUP_BORE', rBore, m3X, botY);
+          mBolts.forEach((b) => addCircle('MOLD_3_TUTUP_BOLTS', m3X + b.x, botY + b.y, b.r));
+          const gatePcd = (rimAsm.rimR + rimAsm.tireR) / 2;
+          const gateR = Math.max(0.5, (state.pourGateDia - (useCut ? state.endmillDia : 0)) / 2);
+          addCircle('MOLD_3_POUR_GATE', m3X + gatePcd, botY, gateR);
+          addCircle('MOLD_3_AIR_VENT', m3X - gatePcd, botY, Math.max(0.6, gateR * 0.65));
         };
 
-        if (exportMode === 'combined' || state.activeModule === 'combined') {
-          const gx1 = 42;
-          const gy1 = 105;
-          const gx2 = gx1 + gearAsm.g1.ra + gearAsm.g2.ra + 8;
-          const gy2 = 105;
-          const rx = gx2 + gearAsm.g2.ra + rimAsm.rimR + 10;
-          const ry = 105;
-          exportGearSet(gx1, gy1, gx2, gy2);
-          exportRimSet(rx, ry);
+        const isCombined = exportMode === 'combined' || state.activeModule === 'combined';
+        if (isCombined) {
+          exportGearSet(36, 60, 92, 105);
+          exportRimSet(175, 105, false);
         } else if (state.activeModule === 'gear') {
-          const gx1 = 60;
-          const gy1 = 105;
-          const gx2 = gx1 + gearAsm.g1.ra + gearAsm.g2.ra + 8;
-          const gy2 = 105;
-          exportGearSet(gx1, gy1, gx2, gy2);
+          const gx1 = 68;
+          const gx2 = gx1 + gearAsm.g1.ra + gearAsm.g2.ra + 12;
+          exportGearSet(gx1, 105, gx2, 105);
         } else {
-          exportRimSet(148.5, 105);
+          exportRimSet(36, 105, true);
         }
 
         add(0, 'ENDSEC');
@@ -1310,54 +1406,52 @@
         return lines.join('\r\n') + '\r\n';
       }
 
-      function handleExportDxf(mode) {
-        const isCombined = mode === 'combined' || state.activeModule === 'combined';
+      function triggerDxfExport(exportMode) {
+        const isCombined = exportMode === 'combined' || state.activeModule === 'combined';
         const filename = isCombined
-          ? `robot_soccer_full_M${state.module}_${state.z1}T_${state.z2}T_rim${state.rimOD}.dxf`
+          ? `robot_soccer_A4_${state.z1}T_${state.z2}T_velg.dxf`
           : state.activeModule === 'gear'
-            ? `gear_M${state.module}_${state.z1}T_${state.z2}T_EM${state.endmillDia}.dxf`
-            : `velg_${state.rimOD}mm_${state.rimShaft}_EM${state.endmillDia}.dxf`;
+            ? `gear_M${state.module}_${state.z1}T_${state.z2}T_EM${state.endmillDia.toFixed(2)}.dxf`
+            : `velg_3pola_mold_${state.acrylicThick}mm_OD${state.tireOD}.dxf`;
 
-        const dxfString = generateAutoCADR12Dxf(mode);
-        const blob = new Blob([dxfString], { type: 'application/dxf' });
-
-        if (dxfBlobUrl) URL.revokeObjectURL(dxfBlobUrl);
-        dxfBlobUrl = URL.createObjectURL(blob);
+        const content = buildDxfContent(exportMode);
+        const blob = new Blob([content], { type: 'application/octet-stream' });
+        if (activeBlobUrl) URL.revokeObjectURL(activeBlobUrl);
+        activeBlobUrl = URL.createObjectURL(blob);
 
         if (dom.dxfFilename) dom.dxfFilename.textContent = filename;
         if (dom.dxfSize) dom.dxfSize.textContent = `${(blob.size / 1024).toFixed(1)} KB`;
-        if (dom.dxfPreviewText) dom.dxfPreviewText.value = dxfString;
+        if (dom.dxfPreviewText) dom.dxfPreviewText.value = content;
         if (dom.dxfDirectLink) {
-          dom.dxfDirectLink.href = dxfBlobUrl;
           dom.dxfDirectLink.setAttribute('download', filename);
+          dom.dxfDirectLink.href = activeBlobUrl;
         }
         if (dom.dxfDrawer) {
           dom.dxfDrawer.classList.remove('hidden');
           dom.dxfDrawer.classList.add('flex');
         }
 
-        // Trigger otomatis unduhan
         try {
           const tempA = document.createElement('a');
-          tempA.href = dxfBlobUrl;
+          tempA.href = activeBlobUrl;
           tempA.download = filename;
           document.body.appendChild(tempA);
           tempA.click();
           document.body.removeChild(tempA);
         } catch (_) {}
 
-        notify(`File DXF siap: ${filename}`);
+        showToast(`File DXF siap: ${filename}`);
       }
 
       /* =====================================================================
-         7. SINKRONISASI INPUT & EVENT LISTENERS
+         7. INTERAKSI UI, PRESET ENDMILL, SIMULASI PUTAR & KONTROL KANVAS
          ===================================================================== */
-      function syncEndmillUI(val) {
+      function setEndmillDiameter(val) {
         state.endmillDia = Math.max(0, Math.min(6, val));
         if (dom.inpEndmillDia) dom.inpEndmillDia.value = state.endmillDia.toFixed(2);
         if (dom.selEndmillPreset) {
           const matched = Array.from(dom.selEndmillPreset.options).some(
-            (o) => o.value !== 'CUSTOM' && Math.abs(parseFloat(o.value) - state.endmillDia) < 0.001
+            (opt) => opt.value !== 'CUSTOM' && Math.abs(parseFloat(opt.value) - state.endmillDia) < 0.001
           );
           dom.selEndmillPreset.value = matched ? state.endmillDia.toFixed(2) : 'CUSTOM';
         }
@@ -1371,134 +1465,120 @@
 
       function switchTab(mod) {
         state.activeModule = mod;
+        state.autoFit = true;
+
         const tabs = [
           { el: dom.tabGear, key: 'gear' },
           { el: dom.tabRim, key: 'rim' },
           { el: dom.tabCombined, key: 'combined' }
         ];
-        tabs.forEach((t) => {
-          if (!t.el) return;
-          const isAct = t.key === mod;
-          t.el.className = isAct
+        tabs.forEach(({ el, key }) => {
+          if (!el) return;
+          const active = key === mod;
+          el.className = active
             ? 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition bg-sky-500/20 text-sky-300 border border-sky-400/50'
             : 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition text-slate-400 hover:text-white border border-transparent';
         });
 
         if (dom.panelGear) {
-          dom.panelGear.classList.toggle('hidden', mod === 'rim');
-          dom.panelGear.classList.toggle('flex', mod !== 'rim');
+          const showGear = mod === 'gear' || mod === 'combined';
+          dom.panelGear.classList.toggle('hidden', !showGear);
+          dom.panelGear.classList.toggle('flex', showGear);
         }
         if (dom.panelRim) {
-          dom.panelRim.classList.toggle('hidden', mod === 'gear');
-          dom.panelRim.classList.toggle('flex', mod !== 'gear');
+          const showRim = mod === 'rim' || mod === 'combined';
+          dom.panelRim.classList.toggle('hidden', !showRim);
+          dom.panelRim.classList.toggle('flex', showRim);
         }
+
         renderCanvas();
       }
 
-      function animationStep(ts) {
+      function stepSpinAnimation(ts) {
         if (!state.isSpinning) return;
-        const dt = lastFrameTime ? (ts - lastFrameTime) / 1000 : 0.016;
-        lastFrameTime = ts;
+        const dt = lastTs ? (ts - lastTs) / 1000 : 0.016;
+        lastTs = ts;
         state.spinAngleDeg = (state.spinAngleDeg + dt * 90) % 360;
         renderCanvas();
-        animId = requestAnimationFrame(animationStep);
+        rafId = requestAnimationFrame(stepSpinAnimation);
       }
 
       function bindAllEvents() {
-        const bindNum = (el, min, max, isInt, setter) => {
+        const bindNum = (id, setter) => {
+          const el = document.getElementById(id);
           if (!el) return;
           const handler = () => {
-            const raw = isInt ? parseInt(el.value, 10) : parseFloat(el.value);
-            if (!isNaN(raw)) {
-              setter(Math.max(min, Math.min(max, raw)));
-              renderCanvas();
-            }
+            setter(el);
+            renderCanvas();
           };
           el.addEventListener('input', handler);
           el.addEventListener('change', handler);
         };
 
-        // Gear inputs
-        bindNum(dom.inpModule, 0.2, 5, false, (v) => { state.module = v; });
-        bindNum(dom.inpPressureAngle, 14.5, 25, false, (v) => { state.pressureAngle = v; });
-        bindNum(dom.inpBacklash, 0, 0.5, false, (v) => { state.backlash = v; });
+        bindNum('inpModule', (el) => { state.module = Math.max(0.2, Math.min(5, parseFloat(el.value) || 0.5)); });
+        bindNum('inpPressureAngle', (el) => { state.pressureAngle = Math.max(14.5, Math.min(25, parseFloat(el.value) || 20)); });
+        bindNum('inpBacklash', (el) => { state.backlash = Math.max(0, Math.min(0.5, parseFloat(el.value) || 0)); });
 
-        bindNum(dom.inpZ1, 5, 150, true, (v) => { state.z1 = v; });
-        bindNum(dom.inpX1, -0.5, 1.0, false, (v) => { state.x1 = v; });
-        bindNum(dom.inpBore1, 0, 50, false, (v) => { state.bore1 = v; });
-        if (dom.selGearShaft1) {
-          dom.selGearShaft1.addEventListener('change', (e) => {
-            state.gearShaft1 = e.target.value;
-            if (dom.inpGearFlat1) {
-              dom.inpGearFlat1.disabled = state.gearShaft1 === 'ROUND';
-              if (state.gearShaft1 !== 'ROUND' && state.gearFlat1 >= state.bore1) {
-                state.gearFlat1 = +(state.bore1 * 0.78).toFixed(2);
-                dom.inpGearFlat1.value = state.gearFlat1;
-              }
+        bindNum('inpZ1', (el) => { state.z1 = Math.max(5, Math.min(150, parseInt(el.value, 10) || 8)); });
+        bindNum('inpX1', (el) => { state.x1 = Math.max(-0.5, Math.min(1.0, parseFloat(el.value) || 0)); });
+        bindNum('inpBore1', (el) => { state.bore1 = Math.max(0, Math.min(50, parseFloat(el.value) || 0)); });
+        bindNum('selGearShaft1', (el) => {
+          state.gearShaft1 = el.value;
+          if (dom.inpGearFlat1) {
+            dom.inpGearFlat1.disabled = el.value === 'ROUND';
+            if (el.value !== 'ROUND' && state.gearFlat1 >= state.bore1) {
+              state.gearFlat1 = +(state.bore1 * 0.78).toFixed(2);
+              dom.inpGearFlat1.value = state.gearFlat1;
             }
-            renderCanvas();
-          });
-        }
-        bindNum(dom.inpGearFlat1, 0.2, 50, false, (v) => { state.gearFlat1 = v; });
+          }
+        });
+        bindNum('inpGearFlat1', (el) => { state.gearFlat1 = Math.max(0.2, parseFloat(el.value) || 0.78); });
 
-        bindNum(dom.inpZ2, 6, 250, true, (v) => { state.z2 = v; });
-        bindNum(dom.inpX2, -0.5, 1.0, false, (v) => { state.x2 = v; });
-        bindNum(dom.inpBore2, 0, 80, false, (v) => { state.bore2 = v; });
-        if (dom.selGearShaft2) {
-          dom.selGearShaft2.addEventListener('change', (e) => {
-            state.gearShaft2 = e.target.value;
-            if (dom.inpGearFlat2) {
-              dom.inpGearFlat2.disabled = state.gearShaft2 === 'ROUND';
-              if (state.gearShaft2 !== 'ROUND' && state.gearFlat2 >= state.bore2) {
-                state.gearFlat2 = +(state.bore2 * 0.78).toFixed(2);
-                dom.inpGearFlat2.value = state.gearFlat2;
-              }
+        bindNum('inpZ2', (el) => { state.z2 = Math.max(6, Math.min(250, parseInt(el.value, 10) || 80)); });
+        bindNum('inpX2', (el) => { state.x2 = Math.max(-0.5, Math.min(1.0, parseFloat(el.value) || 0)); });
+        bindNum('inpBore2', (el) => { state.bore2 = Math.max(0, Math.min(80, parseFloat(el.value) || 0)); });
+        bindNum('selGearShaft2', (el) => {
+          state.gearShaft2 = el.value;
+          if (dom.inpGearFlat2) {
+            dom.inpGearFlat2.disabled = el.value === 'ROUND';
+            if (el.value !== 'ROUND' && state.gearFlat2 >= state.bore2) {
+              state.gearFlat2 = +(state.bore2 * 0.78).toFixed(2);
+              dom.inpGearFlat2.value = state.gearFlat2;
             }
-            renderCanvas();
-          });
-        }
-        bindNum(dom.inpGearFlat2, 0.2, 80, false, (v) => { state.gearFlat2 = v; });
-        bindNum(dom.inpBoltCount2, 0, 8, true, (v) => { state.boltCount2 = v; });
-        bindNum(dom.inpBoltDia2, 0.5, 15, false, (v) => { state.boltDia2 = v; });
-        bindNum(dom.inpBoltPcd2, 4, 100, false, (v) => { state.boltPcd2 = v; });
+          }
+        });
+        bindNum('inpGearFlat2', (el) => { state.gearFlat2 = Math.max(0.2, parseFloat(el.value) || 2.40); });
+        bindNum('inpBoltCount2', (el) => { state.boltCount2 = Math.max(0, Math.min(8, parseInt(el.value, 10) || 0)); });
+        bindNum('inpBoltDia2', (el) => { state.boltDia2 = Math.max(0.5, parseFloat(el.value) || 2.2); });
+        bindNum('inpBoltPcd2', (el) => { state.boltPcd2 = Math.max(4, parseFloat(el.value) || 14.0); });
 
-        // Rim & Tire inputs
-        if (dom.rngTireOD) {
-          dom.rngTireOD.addEventListener('input', (e) => {
-            state.tireOD = parseFloat(e.target.value) || 50;
-            if (dom.lblTireOD) dom.lblTireOD.textContent = state.tireOD.toFixed(1);
-            renderCanvas();
-          });
-        }
-        bindNum(dom.inpRimOD, 15, 70, false, (v) => { state.rimOD = v; });
-        bindNum(dom.inpTireW, 6, 35, false, (v) => { state.tireW = v; });
-        if (dom.selRimShaft) {
-          dom.selRimShaft.addEventListener('change', (e) => {
-            state.rimShaft = e.target.value;
-            if (dom.inpRimFlat) dom.inpRimFlat.disabled = state.rimShaft === 'ROUND';
-            renderCanvas();
-          });
-        }
-        bindNum(dom.inpRimBore, 1, 25, false, (v) => { state.rimBore = v; });
-        bindNum(dom.inpRimFlat, 0.5, 25, false, (v) => { state.rimFlat = v; });
-        bindNum(dom.inpRimPinCount, 0, 12, true, (v) => { state.rimPinCount = v; });
-        bindNum(dom.inpRimPinDia, 0.8, 8, false, (v) => { state.rimPinDia = v; });
-        bindNum(dom.inpRimPinPcd, 6, 60, false, (v) => { state.rimPinPcd = v; });
+        // Velg & Ban Silikon
+        bindNum('rngTireOD', (el) => {
+          state.tireOD = parseFloat(el.value) || 50.0;
+          if (dom.lblTireOD) dom.lblTireOD.textContent = state.tireOD.toFixed(1);
+        });
+        bindNum('inpRimOD', (el) => { state.rimOD = Math.max(15, parseFloat(el.value) || 39.0); });
+        bindNum('inpTireW', (el) => { state.tireW = Math.max(6, parseFloat(el.value) || 15.0); });
+        bindNum('inpRimFlange', (el) => { state.rimFlange = Math.max(0.8, parseFloat(el.value) || 1.8); });
+        bindNum('inpRimGrooveDepth', (el) => { state.rimGrooveDepth = Math.max(0.2, parseFloat(el.value) || 1.2); });
+        bindNum('selAcrylicThick', (el) => { state.acrylicThick = parseFloat(el.value) || 3; });
+        bindNum('inpMoldWall', (el) => { state.moldWall = Math.max(3, parseFloat(el.value) || 6.0); });
+        bindNum('inpMoldBolts', (el) => { state.moldBolts = Math.max(2, Math.min(8, parseInt(el.value, 10) || 4)); });
+        bindNum('inpMoldBoltDia', (el) => { state.moldBoltDia = Math.max(1.5, parseFloat(el.value) || 3.2); });
+        bindNum('inpPourGate', (el) => { state.pourGateDia = Math.max(2.0, parseFloat(el.value) || 4.0); });
+        bindNum('selRimShaft', (el) => { state.rimShaft = el.value; });
+        bindNum('inpRimBore', (el) => { state.rimBore = Math.max(1, parseFloat(el.value) || 5.45); });
+        bindNum('inpRimFlat', (el) => { state.rimFlat = Math.max(0.5, parseFloat(el.value) || 3.80); });
+        bindNum('inpRimPinCount', (el) => { state.rimPinCount = Math.max(0, Math.min(12, parseInt(el.value, 10) || 0)); });
+        bindNum('inpRimPinDia', (el) => { state.rimPinDia = Math.max(0.8, parseFloat(el.value) || 2.2); });
+        bindNum('inpRimPinPcd', (el) => { state.rimPinPcd = Math.max(6, parseFloat(el.value) || 28.0); });
 
-        // Endmill inputs
-        if (dom.inpEndmillDia) {
-          dom.inpEndmillDia.addEventListener('input', (e) => {
-            const v = parseFloat(e.target.value);
-            if (!isNaN(v)) {
-              syncEndmillUI(v);
-              renderCanvas();
-            }
-          });
-        }
+        // Endmill CNC
+        bindNum('inpEndmillDia', (el) => { setEndmillDiameter(parseFloat(el.value) || 0); });
         if (dom.selEndmillPreset) {
           dom.selEndmillPreset.addEventListener('change', (e) => {
             if (e.target.value !== 'CUSTOM') {
-              syncEndmillUI(parseFloat(e.target.value) || 0);
+              setEndmillDiameter(parseFloat(e.target.value) || 0);
               renderCanvas();
             }
           });
@@ -1516,63 +1596,75 @@
             state.module = parseFloat(btn.dataset.m) || 0.5;
             state.z1 = parseInt(btn.dataset.z1, 10) || 8;
             state.z2 = parseInt(btn.dataset.z2, 10) || 80;
-            if (dom.inpModule) dom.inpModule.value = state.module.toFixed(2);
-            if (dom.inpZ1) dom.inpZ1.value = state.z1;
-            if (dom.inpZ2) dom.inpZ2.value = state.z2;
+            const elM = document.getElementById('inpModule');
+            const elZ1 = document.getElementById('inpZ1');
+            const elZ2 = document.getElementById('inpZ2');
+            if (elM) elM.value = state.module.toFixed(2);
+            if (elZ1) elZ1.value = state.z1;
+            if (elZ2) elZ2.value = state.z2;
+            state.autoFit = true;
             renderCanvas();
-            notify(`Preset Gear ${state.z1}T:${state.z2}T (M${state.module}) diterapkan`);
+            showToast(`Preset Gear M${state.module} ${state.z1}T:${state.z2}T diterapkan`);
           } else if (act === 'set-endmill') {
-            syncEndmillUI(parseFloat(btn.dataset.val) || 0);
+            setEndmillDiameter(parseFloat(btn.dataset.val) || 0);
             renderCanvas();
           } else if (act === 'toggle-layout') {
             state.layoutMode = state.layoutMode === 'mesh' ? 'cut' : 'mesh';
-            btn.textContent = state.layoutMode === 'mesh' ? '⚙️ Mode: Posisi Mesh' : '📐 Mode: Layout Potong';
+            if (dom.btnToggleLayout) {
+              dom.btnToggleLayout.textContent = state.layoutMode === 'mesh' ? '⚙️ Mode: Posisi Mesh' : '📐 Mode: Layout Potong';
+            }
+            state.autoFit = true;
             renderCanvas();
           } else if (act === 'toggle-cut-profile') {
             state.showCutProfile = !state.showCutProfile;
-            btn.textContent = state.showCutProfile ? '🛠️ Kompensasi Endmill: ON' : '🛠️ Kompensasi Endmill: OFF';
-            btn.className = state.showCutProfile
-              ? 'px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 transition'
-              : 'px-3 py-2 rounded-xl text-xs font-bold bg-[#0b1324] text-slate-400 border border-slate-700 transition';
+            if (dom.btnToggleCutProfile) {
+              dom.btnToggleCutProfile.textContent = state.showCutProfile ? '🛠️ Kompensasi Endmill: ON' : '📏 Garis Nominal: OFF';
+            }
             renderCanvas();
           } else if (act === 'toggle-spin') {
             state.isSpinning = !state.isSpinning;
-            btn.textContent = state.isSpinning ? '⏸ Jeda Simulasi' : '▶ Simulasi Putar';
+            if (dom.btnToggleSpin) {
+              dom.btnToggleSpin.textContent = state.isSpinning ? '⏸ Jeda Simulasi' : '▶ Simulasi Putar';
+            }
             if (state.isSpinning) {
-              lastFrameTime = performance.now();
-              animId = requestAnimationFrame(animationStep);
-            } else if (animId) {
-              cancelAnimationFrame(animId);
+              lastTs = performance.now();
+              rafId = requestAnimationFrame(stepSpinAnimation);
+            } else if (rafId) {
+              cancelAnimationFrame(rafId);
             }
           } else if (act === 'zoom-in') {
-            state.zoom = Math.min(10, state.zoom * 1.25);
+            state.autoFit = false;
+            state.zoom = Math.min(12, state.zoom * 1.2);
             renderCanvas();
           } else if (act === 'zoom-out') {
-            state.zoom = Math.max(0.4, state.zoom * 0.8);
+            state.autoFit = false;
+            state.zoom = Math.max(0.3, state.zoom / 1.2);
             renderCanvas();
           } else if (act === 'zoom-reset') {
+            state.autoFit = true;
             state.zoom = 1.0;
             state.panX = 0;
             state.panY = 0;
             renderCanvas();
           } else if (act === 'export-dxf') {
-            handleExportDxf(btn.dataset.mode || 'active');
+            triggerDxfExport(btn.dataset.mode || 'active');
           } else if (act === 'copy-dxf') {
             if (dom.dxfPreviewText && dom.dxfPreviewText.value) {
               dom.dxfPreviewText.select();
               document.execCommand('copy');
-              notify('Kode ASCII DXF berhasil disalin');
+              showToast('Kode ASCII DXF berhasil disalin');
             }
           }
         });
 
         // Pan & Zoom Kanvas dengan Pointer / Wheel
         if (dom.canvas) {
-          let isPanning = false;
+          let isDragging = false;
           let startX = 0, startY = 0, basePanX = 0, basePanY = 0;
 
           dom.canvas.addEventListener('pointerdown', (e) => {
-            isPanning = true;
+            isDragging = true;
+            state.autoFit = false;
             startX = e.clientX;
             startY = e.clientY;
             basePanX = state.panX;
@@ -1580,20 +1672,20 @@
           });
 
           window.addEventListener('pointermove', (e) => {
-            if (!isPanning) return;
+            if (!isDragging) return;
             state.panX = basePanX + (e.clientX - startX);
             state.panY = basePanY + (e.clientY - startY);
             renderCanvas();
           });
 
           window.addEventListener('pointerup', () => {
-            isPanning = false;
+            isDragging = false;
           });
 
           dom.canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
-            const factor = e.deltaY < 0 ? 1.12 : 0.89;
-            state.zoom = Math.max(0.4, Math.min(10, state.zoom * factor));
+            state.autoFit = false;
+            state.zoom = Math.max(0.3, Math.min(12, state.zoom * (e.deltaY < 0 ? 1.15 : 0.87)));
             renderCanvas();
           }, { passive: false });
         }
@@ -1608,61 +1700,34 @@
           tabCombined: document.getElementById('tabCombined'),
           panelGear: document.getElementById('panelGear'),
           panelRim: document.getElementById('panelRim'),
-
           badgeGearRatio: document.getElementById('badgeGearRatio'),
-          inpModule: document.getElementById('inpModule'),
-          inpPressureAngle: document.getElementById('inpPressureAngle'),
-          inpBacklash: document.getElementById('inpBacklash'),
-
           tagPinionOD: document.getElementById('tagPinionOD'),
-          inpZ1: document.getElementById('inpZ1'),
-          inpX1: document.getElementById('inpX1'),
-          inpBore1: document.getElementById('inpBore1'),
-          selGearShaft1: document.getElementById('selGearShaft1'),
-          inpGearFlat1: document.getElementById('inpGearFlat1'),
-
           tagSpurOD: document.getElementById('tagSpurOD'),
-          inpZ2: document.getElementById('inpZ2'),
-          inpX2: document.getElementById('inpX2'),
-          inpBore2: document.getElementById('inpBore2'),
-          selGearShaft2: document.getElementById('selGearShaft2'),
-          inpGearFlat2: document.getElementById('inpGearFlat2'),
-          inpBoltCount2: document.getElementById('inpBoltCount2'),
-          inpBoltDia2: document.getElementById('inpBoltDia2'),
-          inpBoltPcd2: document.getElementById('inpBoltPcd2'),
-          gearTelemetry: document.getElementById('gearTelemetry'),
-
           badgeTireWall: document.getElementById('badgeTireWall'),
-          rngTireOD: document.getElementById('rngTireOD'),
+          tagMoldOD: document.getElementById('tagMoldOD'),
+          inpGearFlat1: document.getElementById('inpGearFlat1'),
+          inpGearFlat2: document.getElementById('inpGearFlat2'),
           lblTireOD: document.getElementById('lblTireOD'),
-          inpRimOD: document.getElementById('inpRimOD'),
-          inpTireW: document.getElementById('inpTireW'),
-          selRimShaft: document.getElementById('selRimShaft'),
-          inpRimBore: document.getElementById('inpRimBore'),
-          inpRimFlat: document.getElementById('inpRimFlat'),
-          inpRimPinCount: document.getElementById('inpRimPinCount'),
-          inpRimPinDia: document.getElementById('inpRimPinDia'),
-          inpRimPinPcd: document.getElementById('inpRimPinPcd'),
-          rimTelemetry: document.getElementById('rimTelemetry'),
-
-          lblKerfOffset: document.getElementById('lblKerfOffset'),
           selEndmillPreset: document.getElementById('selEndmillPreset'),
           inpEndmillDia: document.getElementById('inpEndmillDia'),
+          lblKerfOffset: document.getElementById('lblKerfOffset'),
           dogboneStatusBox: document.getElementById('dogboneStatusBox'),
-
+          gearTelemetry: document.getElementById('gearTelemetry'),
+          rimTelemetry: document.getElementById('rimTelemetry'),
           dxfDrawer: document.getElementById('dxfDrawer'),
           dxfFilename: document.getElementById('dxfFilename'),
           dxfSize: document.getElementById('dxfSize'),
           dxfDirectLink: document.getElementById('dxfDirectLink'),
           dxfPreviewText: document.getElementById('dxfPreviewText'),
-
           canvas: document.getElementById('cadCanvas'),
           hudBanner: document.getElementById('hudBanner'),
+          btnToggleLayout: document.getElementById('btnToggleLayout'),
+          btnToggleCutProfile: document.getElementById('btnToggleCutProfile'),
+          btnToggleSpin: document.getElementById('btnToggleSpin'),
           toast: document.getElementById('toast')
         };
 
         bindAllEvents();
-        syncEndmillUI(state.endmillDia);
         renderCanvas();
       }
 
