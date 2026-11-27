@@ -39,6 +39,14 @@
       background: #38bdf8;
     }
 
+    button {
+      cursor: pointer;
+    }
+
+    button > * {
+      pointer-events: none;
+    }
+
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
       opacity: 1;
@@ -72,7 +80,7 @@
         </div>
         <div>
           <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white">Robot Soccer CAD Studio</h1>
-          <p class="text-[11px] sm:text-xs font-mono-tech text-slate-400">A4 Sheet (297×210 mm) • Involute Gear • Velg &amp; Ban • AutoCAD R12 DXF</p>
+          <p class="text-[11px] sm:text-xs font-mono-tech text-slate-400">A4 Sheet (297×210 mm) • Involute Gear • Velg &amp; Mold Ban • AutoCAD R12 DXF</p>
         </div>
       </div>
 
@@ -305,9 +313,65 @@
                 class="w-full bg-[#0b1324] border border-slate-700 focus:border-sky-400 rounded-lg px-2.5 py-2 text-xs font-mono-tech text-white outline-none" />
             </div>
             <div>
-              <label for="inpRimGrooveDepth" class="block text-[11px] font-semibold text-slate-400 mb-1">Dalam Alur Ban (mm)</label>
-              <input id="inpRimGrooveDepth" type="number" min="0.2" max="5" step="0.1" value="1.2"
+              <label for="inpRimGrooveDepth" class="block text-[11px] font-semibold text-slate-400 mb-1">Dalam Alur Center (mm)</label>
+              <input id="inpRimGrooveDepth" type="number" min="0.5" max="8" step="0.1" value="3.5"
                 class="w-full bg-[#0b1324] border border-slate-700 focus:border-sky-400 rounded-lg px-2.5 py-2 text-xs font-mono-tech text-white outline-none" />
+            </div>
+          </div>
+
+          <!-- 4 Baut Pengunci Kepingan Akrilik Velg + Base & Top Molding -->
+          <div class="bg-[#0b1324] border border-amber-500/40 rounded-xl p-3 flex flex-col gap-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-300">● 4 Baut Pengunci Velg &amp; Base/Top Mold</span>
+              <span id="tagRimBoltInfo" class="text-[11px] font-mono-tech text-amber-300 bg-amber-950/70 px-2 py-0.5 rounded">4× M3 • PCD 16.0mm</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label for="inpRimBoltCount" class="block text-[10px] font-semibold text-slate-400 mb-1">Jml Baut</label>
+                <input id="inpRimBoltCount" type="number" min="0" max="8" step="1" value="4"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-amber-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+              <div>
+                <label for="selRimBoltSize" class="block text-[10px] font-semibold text-slate-400 mb-1">Ukuran Baut</label>
+                <select id="selRimBoltSize"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-amber-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none">
+                  <option value="M2">M2 (Ø 2.1 mm)</option>
+                  <option value="M3" selected>M3 (Ø 3.1 mm)</option>
+                </select>
+              </div>
+              <div>
+                <label for="inpRimBoltPcd" class="block text-[10px] font-semibold text-slate-400 mb-1">PCD Baut (mm)</label>
+                <input id="inpRimBoltPcd" type="number" min="8" max="55" step="0.5" value="16.0"
+                  class="w-full bg-[#111b2e] border border-slate-700 focus:border-amber-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-snug">
+              Selaras tembus pada ke-3 lapisan velg (Flange Kiri, Center Alur, Flange Kanan) serta Base &amp; Top Molding untuk mengunci velg saat pengecoran.
+            </p>
+          </div>
+
+          <!-- Lubang Gripper Silikon pada Flange Velg Tepi -->
+          <div class="bg-[#0b1324] border border-sky-500/35 rounded-xl p-3 flex flex-col gap-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-sky-300">● Lubang Gripper Silikon (Pada Flange Tepi)</span>
+              <span id="tagGripperPcd" class="text-[11px] font-mono-tech text-emerald-300 bg-emerald-950/70 px-2 py-0.5 rounded">PCD 34.0 mm</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label for="inpRimPinCount" class="block text-[10px] font-semibold text-slate-400 mb-1">Jml Lubang</label>
+                <input id="inpRimPinCount" type="number" min="0" max="16" step="1" value="8"
+                  class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+              <div>
+                <label for="inpRimPinDia" class="block text-[10px] font-semibold text-slate-400 mb-1">Ø Lubang (mm)</label>
+                <input id="inpRimPinDia" type="number" min="0.8" max="6" step="0.1" value="2.2"
+                  class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
+              <div>
+                <label for="inpRimPinPcd" class="block text-[10px] font-semibold text-slate-400 mb-1">PCD Flange</label>
+                <input id="inpRimPinPcd" type="number" min="10" max="65" step="0.5" value="34.0"
+                  class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
+              </div>
             </div>
           </div>
 
@@ -334,12 +398,12 @@
             </div>
             <div class="grid grid-cols-3 gap-2">
               <div>
-                <label for="inpMoldBolts" class="block text-[10px] font-semibold text-slate-400 mb-1">Baut Klem Mold</label>
+                <label for="inpMoldBolts" class="block text-[10px] font-semibold text-slate-400 mb-1">Baut Luar Mold</label>
                 <input id="inpMoldBolts" type="number" min="2" max="8" step="1" value="4"
                   class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
               </div>
               <div>
-                <label for="inpMoldBoltDia" class="block text-[10px] font-semibold text-slate-400 mb-1">Ø Baut Mold</label>
+                <label for="inpMoldBoltDia" class="block text-[10px] font-semibold text-slate-400 mb-1">Ø Baut Luar</label>
                 <input id="inpMoldBoltDia" type="number" min="1.5" max="6" step="0.1" value="3.2"
                   class="w-full bg-[#111b2e] border border-slate-700 focus:border-emerald-400 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
               </div>
@@ -353,7 +417,7 @@
 
           <!-- Profil Poros Velg -->
           <div class="bg-[#0b1324] border border-slate-800 rounded-xl p-3 flex flex-col gap-2.5">
-            <span class="text-xs font-bold text-sky-400">● Poros Hub Velg (Dengan Dogbone CNC)</span>
+            <span class="text-xs font-bold text-rose-400">● Poros Hub Velg (Dengan Dogbone CNC)</span>
             <div class="grid grid-cols-3 gap-2">
               <div>
                 <label for="selRimShaft" class="block text-[10px] font-semibold text-slate-400 mb-1">Bentuk As</label>
@@ -372,24 +436,6 @@
               <div>
                 <label for="inpRimFlat" class="block text-[10px] font-semibold text-slate-400 mb-1">Flat D (mm)</label>
                 <input id="inpRimFlat" type="number" min="0.5" max="25" step="0.05" value="3.80"
-                  class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-800/80">
-              <div>
-                <label for="inpRimPinCount" class="block text-[10px] font-semibold text-slate-400 mb-1">Pin Pengunci</label>
-                <input id="inpRimPinCount" type="number" min="0" max="12" step="1" value="6"
-                  class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
-              </div>
-              <div>
-                <label for="inpRimPinDia" class="block text-[10px] font-semibold text-slate-400 mb-1">Ø Pin (mm)</label>
-                <input id="inpRimPinDia" type="number" min="0.8" max="8" step="0.1" value="2.2"
-                  class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
-              </div>
-              <div>
-                <label for="inpRimPinPcd" class="block text-[10px] font-semibold text-slate-400 mb-1">PCD Pin</label>
-                <input id="inpRimPinPcd" type="number" min="6" max="60" step="0.5" value="28.0"
                   class="w-full bg-[#111b2e] border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono-tech text-white outline-none" />
               </div>
             </div>
@@ -498,27 +544,30 @@
 
         <!-- LEGENDA LAYER KANAN BAWAH -->
         <div class="hidden sm:flex flex-wrap items-center gap-3 absolute bottom-3 right-3 bg-[#070c18]/90 backdrop-blur border border-slate-800 rounded-xl px-3 py-1.5 font-mono-tech text-[10px] text-slate-300 pointer-events-none">
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>Pinion / Velg</span>
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Spur / Mold Cavity</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>Pinion / Flange Tepi</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Spur / Baut Pengunci</span>
           <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Bore / D-Shaft</span>
-          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Mold Ring / Pin</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Lubang Gripper / Mold</span>
         </div>
       </div>
 
       <!-- TOOLBAR KONTROL KANVAS -->
       <div class="flex flex-wrap items-center justify-between gap-2 bg-[#111b2e] border border-slate-800 rounded-2xl p-2.5">
         <div class="flex flex-wrap items-center gap-2">
-          <button id="btnToggleLayout" type="button" data-action="toggle-layout"
-            class="px-3 py-2 rounded-xl text-xs font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700 transition">
-            ⚙️ Mode: Posisi Mesh
-          </button>
+          <div id="gearOnlyControls" class="flex flex-wrap items-center gap-2">
+            <button id="btnToggleLayout" type="button" data-action="toggle-layout"
+              class="px-3 py-2 rounded-xl text-xs font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700 transition">
+              ⚙️ Mode: Posisi Mesh
+            </button>
+            <button id="btnToggleSpin" type="button" data-action="toggle-spin"
+              class="px-3 py-2 rounded-xl text-xs font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700 transition">
+              ▶ Simulasi Putar
+            </button>
+          </div>
+
           <button id="btnToggleCutProfile" type="button" data-action="toggle-cut-profile"
             class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 transition">
             🛠️ Kompensasi Endmill: ON
-          </button>
-          <button id="btnToggleSpin" type="button" data-action="toggle-spin"
-            class="px-3 py-2 rounded-xl text-xs font-bold bg-[#0b1324] hover:bg-slate-800 text-slate-200 border border-slate-700 transition">
-            ▶ Simulasi Putar
           </button>
         </div>
 
@@ -544,6 +593,9 @@
     (function () {
       'use strict';
 
+      /* =====================================================================
+         1. STATE APLIKASI PARAMETRIK
+         ===================================================================== */
       const state = {
         activeModule: 'gear',   // 'gear' | 'rim' | 'combined'
         layoutMode: 'mesh',     // 'mesh' | 'cut'
@@ -579,7 +631,7 @@
         rimOD: 39.0,
         tireW: 15.0,
         rimFlange: 1.8,
-        rimGrooveDepth: 1.2,
+        rimGrooveDepth: 3.5,
         acrylicThick: 3,
         moldWall: 6.0,
         moldBolts: 4,
@@ -588,9 +640,14 @@
         rimShaft: 'DOUBLE_D',
         rimBore: 5.45,
         rimFlat: 3.80,
-        rimPinCount: 6,
+        rimPinCount: 8,
         rimPinDia: 2.2,
-        rimPinPcd: 28.0,
+        rimPinPcd: 34.0,
+
+        // 4 Baut Pengunci Kepingan Akrilik Velg + Base & Top Molding
+        rimBoltCount: 4,
+        rimBoltSize: 'M3', // 'M2' (Ø2.1mm) | 'M3' (Ø3.1mm)
+        rimBoltPcd: 16.0,
 
         endmillDia: 0.80
       };
@@ -601,6 +658,9 @@
       let toastTimer = null;
       let activeBlobUrl = null;
 
+      /* =====================================================================
+         2. UTILITAS MATEMATIKA & TOAST
+         ===================================================================== */
       function deg2rad(deg) {
         return (deg * Math.PI) / 180;
       }
@@ -613,6 +673,9 @@
         toastTimer = setTimeout(() => dom.toast.classList.remove('show'), 2200);
       }
 
+      /* =====================================================================
+         3. PEMBANGUN KONTUR POROS (ROUND, SINGLE-D, DOUBLE-D + DOGBONE CNC)
+         ===================================================================== */
       function buildBoreContour(boreDia, shaftShape, flatDim, endmillDia) {
         if (!boreDia || boreDia <= 0.1) return [];
         const r = boreDia / 2;
@@ -717,6 +780,9 @@
         return pts;
       }
 
+      /* =====================================================================
+         4. GEOMETRI GEAR INVOLUTE & RAKITAN VELG + MOLD BAN SILIKON
+         ===================================================================== */
       function buildGearSingle(m, z, shiftX, boreDia, shaftShape, flatDim, boltCount, boltDia, boltPcd) {
         const alpha = deg2rad(state.pressureAngle);
         const rp = (m * z) / 2;
@@ -826,6 +892,8 @@
         const tireR = state.tireOD / 2;
         const rimR = state.rimOD / 2;
         const rimRCut = rimR + state.endmillDia / 2;
+        const grooveR = Math.max(state.rimBore / 2 + 2.5, rimR - state.rimGrooveDepth);
+
         const boreNominal = buildBoreContour(state.rimBore, state.rimShaft, state.rimFlat, 0);
         const boreCut = buildBoreContour(
           Math.max(0.4, state.rimBore - state.endmillDia),
@@ -834,21 +902,45 @@
           state.endmillDia
         );
 
+        // 4 Baut Pengunci Kepingan Akrilik Velg + Base & Top Molding (Opsi M2 Ø2.1mm atau M3 Ø3.1mm)
+        const rimBoltDia = state.rimBoltSize === 'M2' ? 2.1 : 3.1;
+        const minBoltPcdR = state.rimBore / 2 + rimBoltDia * 0.75 + 0.8;
+        const maxBoltPcdR = grooveR - rimBoltDia * 0.75 - 0.8;
+        const effectiveBoltPcdR = Math.max(minBoltPcdR, Math.min(maxBoltPcdR, state.rimBoltPcd / 2));
+        const effectiveBoltPcd = effectiveBoltPcdR * 2;
+        const rimBoltsNominal = [];
+        const rimBoltsCut = [];
+
+        if (state.rimBoltCount > 0) {
+          for (let i = 0; i < state.rimBoltCount; i++) {
+            const a = (i * 2 * Math.PI) / state.rimBoltCount + Math.PI / 4;
+            const bx = effectiveBoltPcdR * Math.cos(a);
+            const by = effectiveBoltPcdR * Math.sin(a);
+            rimBoltsNominal.push({ x: bx, y: by, r: rimBoltDia / 2 });
+            rimBoltsCut.push({ x: bx, y: by, r: Math.max(0.15, (rimBoltDia - state.endmillDia) / 2) });
+          }
+        }
+
+        // Lubang Gripper Silikon tepat di area Flange Tepi
         const pinsNominal = [];
         const pinsCut = [];
+        const minSafeR = state.rimBore / 2 + state.rimPinDia * 0.7 + 0.8;
+        const maxSafeR = rimR - state.rimPinDia * 0.65 - 0.6;
+        const effectivePcdR = Math.min(maxSafeR, Math.max(minSafeR, state.rimPinPcd / 2));
+        const effectivePcd = effectivePcdR * 2;
+        const isInsideFlangeRim = effectivePcdR > grooveR;
+
         if (state.rimPinCount > 0 && state.rimPinDia > 0.2) {
-          const rPcd = Math.min(rimR - state.rimPinDia, Math.max(state.rimBore / 2 + state.rimPinDia + 1, state.rimPinPcd / 2));
           for (let i = 0; i < state.rimPinCount; i++) {
             const a = (i * 2 * Math.PI) / state.rimPinCount;
-            const px = rPcd * Math.cos(a);
-            const py = rPcd * Math.sin(a);
+            const px = effectivePcdR * Math.cos(a);
+            const py = effectivePcdR * Math.sin(a);
             pinsNominal.push({ x: px, y: py, r: state.rimPinDia / 2 });
             pinsCut.push({ x: px, y: py, r: Math.max(0.15, (state.rimPinDia - state.endmillDia) / 2) });
           }
         }
 
         const wallThickness = Math.max(0, (state.tireOD - state.rimOD) / 2);
-        const grooveR = Math.max(state.rimBore / 2 + 2, rimR - state.rimGrooveDepth);
         const moldInnerR = tireR;
         const moldInnerRCut = Math.max(2, tireR - state.endmillDia / 2);
         const moldOuterR = tireR + state.moldWall;
@@ -856,6 +948,7 @@
         const moldBoltPcdR = tireR + state.moldWall * 0.52;
         const moldBoltsNominal = [];
         const moldBoltsCut = [];
+
         for (let i = 0; i < state.moldBolts; i++) {
           const a = (i * 2 * Math.PI) / state.moldBolts + Math.PI / 4;
           const bx = moldBoltPcdR * Math.cos(a);
@@ -866,18 +959,19 @@
 
         const sheetT = state.acrylicThick || 3;
         const cavityLayers = Math.max(1, Math.round(state.tireW / sheetT));
-        const actualCavityH = cavityLayers * sheetT;
         const flangeLayers = Math.max(1, Math.round(state.rimFlange / sheetT));
         const coreLayers = Math.max(1, Math.round((state.tireW - 2 * flangeLayers * sheetT) / sheetT));
 
         return {
           tireR, rimR, rimRCut, grooveR,
           boreNominal, boreCut,
+          rimBoltDia, effectiveBoltPcd, rimBoltsNominal, rimBoltsCut,
           pinsNominal, pinsCut,
+          effectivePcd, isInsideFlangeRim,
           wallThickness,
           moldInnerR, moldInnerRCut, moldOuterR, moldOuterRCut,
           moldBoltsNominal, moldBoltsCut,
-          sheetT, cavityLayers, actualCavityH, flangeLayers, coreLayers
+          sheetT, cavityLayers, flangeLayers, coreLayers
         };
       }
 
@@ -888,6 +982,12 @@
         if (dom.tagSpurOD) dom.tagSpurOD.textContent = `OD ${(gearAsm.g2.ra * 2).toFixed(2)} mm`;
         if (dom.badgeTireWall) dom.badgeTireWall.textContent = `Tebal ${rimAsm.wallThickness.toFixed(1)} mm`;
         if (dom.tagMoldOD) dom.tagMoldOD.textContent = `Mold OD ${(rimAsm.moldOuterR * 2).toFixed(1)} mm`;
+        if (dom.tagRimBoltInfo) {
+          dom.tagRimBoltInfo.textContent = `${state.rimBoltCount}× ${state.rimBoltSize} • PCD ${rimAsm.effectiveBoltPcd.toFixed(1)}mm`;
+        }
+        if (dom.tagGripperPcd) {
+          dom.tagGripperPcd.textContent = `PCD ${rimAsm.effectivePcd.toFixed(1)} mm ${rimAsm.isInsideFlangeRim ? '(Di Bibir Flange)' : '(Web Dalam)'}`;
+        }
         if (dom.lblKerfOffset) dom.lblKerfOffset.textContent = `Offset ±${(state.endmillDia / 2).toFixed(2)} mm`;
 
         if (dom.dogboneStatusBox) {
@@ -911,9 +1011,9 @@
         if (dom.rimTelemetry) {
           dom.rimTelemetry.innerHTML = `
             <div class="flex justify-between"><span>Tebal Dinding Ban Silikon:</span><span class="text-emerald-400 font-bold">${rimAsm.wallThickness.toFixed(2)} mm</span></div>
-            <div class="flex justify-between"><span>Pola Velg (3 Pola Terpisah):</span><span class="text-sky-300 font-bold">2× Tepi (Flange) + 1× Center</span></div>
-            <div class="flex justify-between"><span>Pola Mold (${rimAsm.sheetT}mm):</span><span class="text-amber-300 font-bold">1× Alas + ${rimAsm.cavityLayers}× Ring + 1× Tutup</span></div>
-            <div class="flex justify-between"><span>Total Kepingan Cutting:</span><span class="text-white font-bold">${3 + rimAsm.cavityLayers + 2} Keping (${rimAsm.cavityLayers + 5} Pola)</span></div>
+            <div class="flex justify-between"><span>Baut Pengunci Velg + Mold:</span><span class="text-amber-300 font-bold">${state.rimBoltCount}× ${state.rimBoltSize} (Ø${rimAsm.rimBoltDia.toFixed(1)}mm, PCD ${rimAsm.effectiveBoltPcd.toFixed(1)}mm)</span></div>
+            <div class="flex justify-between"><span>3 Pola Velg:</span><span class="text-sky-300 font-bold">2× Flange (${state.rimPinCount} Lubang) + 1× Center</span></div>
+            <div class="flex justify-between"><span>Cetakan Mold (${rimAsm.sheetT}mm):</span><span class="text-purple-300 font-bold">1× Base + ${rimAsm.cavityLayers}× Ring + 1× Top</span></div>
           `;
         }
       }
@@ -996,30 +1096,51 @@
         const rimR = useCut ? rimAsm.rimRCut : rimAsm.rimR;
         const grooveRCut = useCut ? rimAsm.grooveR + state.endmillDia / 2 : rimAsm.grooveR;
         const borePts = useCut ? rimAsm.boreCut : rimAsm.boreNominal;
+        const rimBolts = useCut ? rimAsm.rimBoltsCut : rimAsm.rimBoltsNominal;
         const pins = useCut ? rimAsm.pinsCut : rimAsm.pinsNominal;
         const mOutR = useCut ? rimAsm.moldOuterRCut : rimAsm.moldOuterR;
         const mInR = useCut ? rimAsm.moldInnerRCut : rimAsm.moldInnerR;
         const mBolts = useCut ? rimAsm.moldBoltsCut : rimAsm.moldBoltsNominal;
 
-        const drawVelgDisc = (px, py, outerR, title, subtitle, strokeCol, fillCol) => {
+        const drawVelgDisc = (px, py, outerR, hasFlangeGripperHoles, title, subtitle, strokeCol, fillCol) => {
           ctx.beginPath();
           ctx.arc(px, py, outerR, 0, Math.PI * 2);
           if (borePts.length > 2) {
             drawClosedPoly(ctx, [...borePts].reverse(), px, py, 0);
           }
-          pins.forEach((p) => {
-            ctx.moveTo(px + p.x + p.r, py + p.y);
-            ctx.arc(px + p.x, py + p.y, p.r, 0, Math.PI * 2, true);
+          // 4 Lubang Baut Pengunci Kepingan Velg (M2 / M3)
+          rimBolts.forEach((rb) => {
+            ctx.moveTo(px + rb.x + rb.r, py + rb.y);
+            ctx.arc(px + rb.x, py + rb.y, rb.r, 0, Math.PI * 2, true);
           });
+          if (hasFlangeGripperHoles) {
+            pins.forEach((p) => {
+              ctx.moveTo(px + p.x + p.r, py + p.y);
+              ctx.arc(px + p.x, py + p.y, p.r, 0, Math.PI * 2, true);
+            });
+          }
           ctx.fillStyle = fillCol;
           ctx.fill('evenodd');
 
+          // Garis Potong Luar
           ctx.beginPath();
           ctx.arc(px, py, outerR, 0, Math.PI * 2);
           ctx.strokeStyle = strokeCol;
           ctx.lineWidth = 0.42;
           ctx.stroke();
 
+          // Garis bantu batas dalam bibir flange (grooveR)
+          if (hasFlangeGripperHoles) {
+            ctx.beginPath();
+            ctx.arc(px, py, rimAsm.grooveR, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+            ctx.lineWidth = 0.22;
+            ctx.setLineDash([1.1, 0.9]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          // Lubang Poros D-Shaft
           if (borePts.length > 2) {
             ctx.beginPath();
             drawClosedPoly(ctx, borePts, px, py, 0);
@@ -1028,13 +1149,25 @@
             ctx.stroke();
           }
 
-          pins.forEach((p) => {
+          // 4 Lubang Baut Pengunci Velg (M2 / M3) berwarna Amber
+          rimBolts.forEach((rb) => {
             ctx.beginPath();
-            ctx.arc(px + p.x, py + p.y, p.r, 0, Math.PI * 2);
-            ctx.strokeStyle = '#34d399';
-            ctx.lineWidth = 0.30;
+            ctx.arc(px + rb.x, py + rb.y, rb.r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 0.36;
             ctx.stroke();
           });
+
+          // Lubang Gripper Silikon pada Flange Tepi
+          if (hasFlangeGripperHoles) {
+            pins.forEach((p) => {
+              ctx.beginPath();
+              ctx.arc(px + p.x, py + p.y, p.r, 0, Math.PI * 2);
+              ctx.strokeStyle = '#34d399';
+              ctx.lineWidth = 0.34;
+              ctx.stroke();
+            });
+          }
 
           ctx.fillStyle = strokeCol;
           ctx.font = 'bold 2.7px monospace';
@@ -1044,24 +1177,55 @@
           ctx.fillText(subtitle, px, py + outerR + 8.2);
         };
 
-        // BARIS ATAS: 3 POLA VELG TERPISAH (TEPI 1, CENTER, TEPI 2)
+        // BARIS ATAS: 3 BAGIAN UTAMA VELG
         const topY = cy - 42;
         const stepVelgX = rimAsm.rimR * 2 + 12;
-        drawVelgDisc(cx, topY, rimR, '1. VELG TEPI A (Flange)', `OD ${state.rimOD.toFixed(1)}mm • 1 pcs`, '#38bdf8', 'rgba(56, 189, 248, 0.16)');
-        drawVelgDisc(cx + stepVelgX, topY, grooveRCut, '2. VELG CENTER (Alur)', `OD ${(rimAsm.grooveR * 2).toFixed(1)}mm • ${rimAsm.coreLayers} pcs`, '#fbbf24', 'rgba(251, 191, 36, 0.16)');
-        drawVelgDisc(cx + stepVelgX * 2, topY, rimR, '3. VELG TEPI B (Flange)', `OD ${state.rimOD.toFixed(1)}mm • 1 pcs`, '#38bdf8', 'rgba(56, 189, 248, 0.16)');
+        drawVelgDisc(
+          cx,
+          topY,
+          rimR,
+          true,
+          '1. FLANGE KIRI (Gripper + 4 Baut)',
+          `OD ${state.rimOD.toFixed(1)}mm • ${state.rimBoltCount}×${state.rimBoltSize}`,
+          '#38bdf8',
+          'rgba(56, 189, 248, 0.16)'
+        );
+        drawVelgDisc(
+          cx + stepVelgX,
+          topY,
+          grooveRCut,
+          false,
+          '2. SEGMEN TENGAH (Alur + 4 Baut)',
+          `OD ${(rimAsm.grooveR * 2).toFixed(1)}mm • ${rimAsm.coreLayers} pcs`,
+          '#fbbf24',
+          'rgba(251, 191, 36, 0.18)'
+        );
+        drawVelgDisc(
+          cx + stepVelgX * 2,
+          topY,
+          rimR,
+          true,
+          '3. FLANGE KANAN (Gripper + 4 Baut)',
+          `OD ${state.rimOD.toFixed(1)}mm • ${state.rimBoltCount}×${state.rimBoltSize}`,
+          '#38bdf8',
+          'rgba(56, 189, 248, 0.16)'
+        );
 
         if (!showMoldAndCrossSection) return;
 
-        // BARIS BAWAH: POLA LENGKAP MOLDING AKRILIK (ALAS, RING CAVITY, TUTUP + TUANG, DIAGRAM SUSUNAN)
+        // BARIS BAWAH: POLA LENGKAP MOLDING AKRILIK
         const botY = cy + 44;
         const stepMoldX = rimAsm.moldOuterR * 2 + 10;
 
-        // Pola Mold 1: Pelat Alas Bawah
+        // Pola Mold 1: Pelat Alas Bawah (Base) — Termasuk 4 lubang baut pengunci velg
         const m1X = cx + 6;
         ctx.beginPath();
         ctx.arc(m1X, botY, mOutR, 0, Math.PI * 2);
         if (borePts.length > 2) drawClosedPoly(ctx, [...borePts].reverse(), m1X, botY, 0);
+        rimBolts.forEach((rb) => {
+          ctx.moveTo(m1X + rb.x + rb.r, botY + rb.y);
+          ctx.arc(m1X + rb.x, botY + rb.y, rb.r, 0, Math.PI * 2, true);
+        });
         mBolts.forEach((b) => {
           ctx.moveTo(m1X + b.x + b.r, botY + b.y);
           ctx.arc(m1X + b.x, botY + b.y, b.r, 0, Math.PI * 2, true);
@@ -1070,9 +1234,10 @@
         ctx.fill('evenodd');
         ctx.beginPath(); ctx.arc(m1X, botY, mOutR, 0, Math.PI * 2); ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 0.42; ctx.stroke();
         if (borePts.length > 2) { ctx.beginPath(); drawClosedPoly(ctx, borePts, m1X, botY, 0); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.34; ctx.stroke(); }
+        rimBolts.forEach((rb) => { ctx.beginPath(); ctx.arc(m1X + rb.x, botY + rb.y, rb.r, 0, Math.PI * 2); ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 0.34; ctx.stroke(); });
         mBolts.forEach((b) => { ctx.beginPath(); ctx.arc(m1X + b.x, botY + b.y, b.r, 0, Math.PI * 2); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.30; ctx.stroke(); });
         ctx.fillStyle = '#a78bfa'; ctx.font = 'bold 2.7px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('4. MOLD ALAS BAWAH', m1X, botY + mOutR + 4.8);
+        ctx.fillText(`4. MOLD BASE (+${state.rimBoltCount}×${state.rimBoltSize} Velg)`, m1X, botY + mOutR + 4.8);
         ctx.fillStyle = '#94a3b8';
         ctx.fillText(`1 pcs (${rimAsm.sheetT}mm)`, m1X, botY + mOutR + 8.2);
 
@@ -1095,11 +1260,15 @@
         ctx.fillStyle = '#94a3b8';
         ctx.fillText(`${rimAsm.cavityLayers} pcs × ${rimAsm.sheetT}mm`, m2X, botY + mOutR + 8.2);
 
-        // Pola Mold 3: Pelat Tutup Atas (dengan Lubang Tuang Silikon & Air Vent)
+        // Pola Mold 3: Pelat Tutup Atas (Top Molding) — Termasuk 4 lubang baut pengunci velg
         const m3X = m2X + stepMoldX;
         ctx.beginPath();
         ctx.arc(m3X, botY, mOutR, 0, Math.PI * 2);
         if (borePts.length > 2) drawClosedPoly(ctx, [...borePts].reverse(), m3X, botY, 0);
+        rimBolts.forEach((rb) => {
+          ctx.moveTo(m3X + rb.x + rb.r, botY + rb.y);
+          ctx.arc(m3X + rb.x, botY + rb.y, rb.r, 0, Math.PI * 2, true);
+        });
         mBolts.forEach((b) => {
           ctx.moveTo(m3X + b.x + b.r, botY + b.y);
           ctx.arc(m3X + b.x, botY + b.y, b.r, 0, Math.PI * 2, true);
@@ -1108,6 +1277,7 @@
         ctx.fill('evenodd');
         ctx.beginPath(); ctx.arc(m3X, botY, mOutR, 0, Math.PI * 2); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 0.42; ctx.stroke();
         if (borePts.length > 2) { ctx.beginPath(); drawClosedPoly(ctx, borePts, m3X, botY, 0); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.34; ctx.stroke(); }
+        rimBolts.forEach((rb) => { ctx.beginPath(); ctx.arc(m3X + rb.x, botY + rb.y, rb.r, 0, Math.PI * 2); ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 0.34; ctx.stroke(); });
         mBolts.forEach((b) => { ctx.beginPath(); ctx.arc(m3X + b.x, botY + b.y, b.r, 0, Math.PI * 2); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 0.30; ctx.stroke(); });
 
         const gatePcd = (rimAsm.rimR + rimAsm.tireR) / 2;
@@ -1122,11 +1292,11 @@
           ctx.stroke();
         });
         ctx.fillStyle = '#38bdf8';
-        ctx.fillText('6. MOLD TUTUP + TUANG', m3X, botY + mOutR + 4.8);
+        ctx.fillText(`6. MOLD TOP (+${state.rimBoltCount}×${state.rimBoltSize} Velg)`, m3X, botY + mOutR + 4.8);
         ctx.fillStyle = '#94a3b8';
         ctx.fillText(`1 pcs (${rimAsm.sheetT}mm) + Gate`, m3X, botY + mOutR + 8.2);
 
-        // Diagram Potongan Samping Tumpukan
+        // Diagram Potongan Samping Tumpukan (dengan jalur baut pengunci velg menembus Base -> Velg -> Top)
         const sx = m3X + mOutR + 22;
         const sy = (topY + botY) / 2;
         const sheetT = rimAsm.sheetT;
@@ -1168,6 +1338,22 @@
             ctx.strokeRect(sx + state.rimBore / 2, ly, innerRimEdge - state.rimBore / 2, sheetT);
           }
         }
+
+        // Garis sumbu vertikal baut pengunci velg (Base -> Velg -> Top)
+        if (state.rimBoltCount > 0) {
+          const boltR = rimAsm.effectiveBoltPcd / 2;
+          [-boltR, boltR].forEach((bx) => {
+            ctx.beginPath();
+            ctx.moveTo(sx + bx, startY - 1.5);
+            ctx.lineTo(sx + bx, startY + totalStackH + 1.5);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 0.32;
+            ctx.setLineDash([1.0, 0.8]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          });
+        }
+
         ctx.fillStyle = '#cbd5e1';
         ctx.fillText(`DIAGRAM RAKITAN (${rimAsm.cavityLayers + 2} Lapis)`, sx, sy + totalStackH / 2 + 5.5);
       }
@@ -1269,14 +1455,14 @@
         } else if (state.activeModule === 'rim') {
           renderRimPart(ctx, rimAsm, 36, 105, true);
           if (dom.hudBanner) {
-            dom.hudBanner.textContent = `3 Pola Velg + Mold Akrilik ${rimAsm.sheetT}mm (${rimAsm.cavityLayers + 2} Lapis) • ${state.rimShaft}`;
+            dom.hudBanner.textContent = `Velg 3 Bagian + Base/Top Mold (${state.rimBoltCount}× Baut ${state.rimBoltSize} Pengunci) • ${state.rimPinCount} Lubang Gripper`;
           }
         } else {
           renderGearPart(ctx, gearAsm.g1, 36, 60, rot1, 'rgba(56, 189, 248, 0.16)', '#38bdf8');
           renderGearPart(ctx, gearAsm.g2, 92, 105, rot2, 'rgba(251, 191, 36, 0.14)', '#fbbf24');
           renderRimPart(ctx, rimAsm, 175, 105, false);
           if (dom.hudBanner) {
-            dom.hudBanner.textContent = `Lembar Gabungan A4 (297×210 mm) • Gear ${state.z1}T:${state.z2}T + 3 Pola Velg`;
+            dom.hudBanner.textContent = `Lembar Gabungan A4 (297×210 mm) • Gear ${state.z1}T:${state.z2}T + Velg (${state.rimBoltCount}×${state.rimBoltSize})`;
           }
         }
 
@@ -1347,6 +1533,7 @@
           const rOuter = useCut ? rimAsm.rimRCut : rimAsm.rimR;
           const grooveRCut = useCut ? rimAsm.grooveR + state.endmillDia / 2 : rimAsm.grooveR;
           const rBore = useCut ? rimAsm.boreCut : rimAsm.boreNominal;
+          const rBolts = useCut ? rimAsm.rimBoltsCut : rimAsm.rimBoltsNominal;
           const rPins = useCut ? rimAsm.pinsCut : rimAsm.pinsNominal;
           const mOutR = useCut ? rimAsm.moldOuterRCut : rimAsm.moldOuterR;
           const mInR = useCut ? rimAsm.moldInnerRCut : rimAsm.moldInnerR;
@@ -1355,14 +1542,18 @@
           const topY = ry - 42;
           const stepVelgX = rimAsm.rimR * 2 + 12;
           const velgPatterns = [
-            { x: rx, r: rOuter, layer: 'VELG_1_TEPI_A' },
-            { x: rx + stepVelgX, r: grooveRCut, layer: 'VELG_2_CENTER_ALUR' },
-            { x: rx + stepVelgX * 2, r: rOuter, layer: 'VELG_3_TEPI_B' }
+            { x: rx, r: rOuter, hasFlangeHoles: true, layer: 'VELG_1_FLANGE_KIRI' },
+            { x: rx + stepVelgX, r: grooveRCut, hasFlangeHoles: false, layer: 'VELG_2_TENGAH_ALUR_GRIPPER' },
+            { x: rx + stepVelgX * 2, r: rOuter, hasFlangeHoles: true, layer: 'VELG_3_FLANGE_KANAN' }
           ];
           velgPatterns.forEach((vp) => {
             addCircle(vp.layer, vp.x, topY, vp.r);
             addClosedPolyline(`${vp.layer}_BORE`, rBore, vp.x, topY);
-            rPins.forEach((p) => addCircle(`${vp.layer}_PINS`, vp.x + p.x, topY + p.y, p.r));
+            // 4 Lubang Baut Pengunci Kepingan Velg (M2 / M3)
+            rBolts.forEach((rb) => addCircle(`${vp.layer}_LOCK_BOLTS_${state.rimBoltSize}`, vp.x + rb.x, topY + rb.y, rb.r));
+            if (vp.hasFlangeHoles) {
+              rPins.forEach((p) => addCircle(`${vp.layer}_FLANGE_GRIPPER_HOLES`, vp.x + p.x, topY + p.y, p.r));
+            }
           });
 
           if (!includeMold) return;
@@ -1370,19 +1561,21 @@
           const botY = ry + 44;
           const stepMoldX = rimAsm.moldOuterR * 2 + 10;
           const m1X = rx + 6;
-          addCircle('MOLD_1_ALAS_OUTER', m1X, botY, mOutR);
-          addClosedPolyline('MOLD_1_ALAS_BORE', rBore, m1X, botY);
-          mBolts.forEach((b) => addCircle('MOLD_1_ALAS_BOLTS', m1X + b.x, botY + b.y, b.r));
+          addCircle('MOLD_1_BASE_OUTER', m1X, botY, mOutR);
+          addClosedPolyline('MOLD_1_BASE_BORE', rBore, m1X, botY);
+          rBolts.forEach((rb) => addCircle(`MOLD_1_BASE_RIM_LOCK_${state.rimBoltSize}`, m1X + rb.x, botY + rb.y, rb.r));
+          mBolts.forEach((b) => addCircle('MOLD_1_BASE_OUTER_BOLTS', m1X + b.x, botY + b.y, b.r));
 
           const m2X = m1X + stepMoldX;
           addCircle('MOLD_2_RING_OUTER', m2X, botY, mOutR);
           addCircle('MOLD_2_RING_CAVITY', m2X, botY, mInR);
-          mBolts.forEach((b) => addCircle('MOLD_2_RING_BOLTS', m2X + b.x, botY + b.y, b.r));
+          mBolts.forEach((b) => addCircle('MOLD_2_RING_OUTER_BOLTS', m2X + b.x, botY + b.y, b.r));
 
           const m3X = m2X + stepMoldX;
-          addCircle('MOLD_3_TUTUP_OUTER', m3X, botY, mOutR);
-          addClosedPolyline('MOLD_3_TUTUP_BORE', rBore, m3X, botY);
-          mBolts.forEach((b) => addCircle('MOLD_3_TUTUP_BOLTS', m3X + b.x, botY + b.y, b.r));
+          addCircle('MOLD_3_TOP_OUTER', m3X, botY, mOutR);
+          addClosedPolyline('MOLD_3_TOP_BORE', rBore, m3X, botY);
+          rBolts.forEach((rb) => addCircle(`MOLD_3_TOP_RIM_LOCK_${state.rimBoltSize}`, m3X + rb.x, botY + rb.y, rb.r));
+          mBolts.forEach((b) => addCircle('MOLD_3_TOP_OUTER_BOLTS', m3X + b.x, botY + b.y, b.r));
           const gatePcd = (rimAsm.rimR + rimAsm.tireR) / 2;
           const gateR = Math.max(0.5, (state.pourGateDia - (useCut ? state.endmillDia : 0)) / 2);
           addCircle('MOLD_3_POUR_GATE', m3X + gatePcd, botY, gateR);
@@ -1409,10 +1602,10 @@
       function triggerDxfExport(exportMode) {
         const isCombined = exportMode === 'combined' || state.activeModule === 'combined';
         const filename = isCombined
-          ? `robot_soccer_A4_${state.z1}T_${state.z2}T_velg.dxf`
+          ? `robot_soccer_A4_${state.z1}T_${state.z2}T_velg_${state.rimBoltSize}.dxf`
           : state.activeModule === 'gear'
             ? `gear_M${state.module}_${state.z1}T_${state.z2}T_EM${state.endmillDia.toFixed(2)}.dxf`
-            : `velg_3pola_mold_${state.acrylicThick}mm_OD${state.tireOD}.dxf`;
+            : `velg_${state.rimBoltCount}x${state.rimBoltSize}_mold_${state.acrylicThick}mm_OD${state.tireOD}.dxf`;
 
         const content = buildDxfContent(exportMode);
         const blob = new Blob([content], { type: 'application/octet-stream' });
@@ -1480,15 +1673,26 @@
             : 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition text-slate-400 hover:text-white border border-transparent';
         });
 
+        const showGear = mod === 'gear' || mod === 'combined';
+        const showRim = mod === 'rim' || mod === 'combined';
+
         if (dom.panelGear) {
-          const showGear = mod === 'gear' || mod === 'combined';
           dom.panelGear.classList.toggle('hidden', !showGear);
           dom.panelGear.classList.toggle('flex', showGear);
         }
         if (dom.panelRim) {
-          const showRim = mod === 'rim' || mod === 'combined';
           dom.panelRim.classList.toggle('hidden', !showRim);
           dom.panelRim.classList.toggle('flex', showRim);
+        }
+
+        if (dom.gearOnlyControls) {
+          dom.gearOnlyControls.classList.toggle('hidden', !showGear);
+          dom.gearOnlyControls.classList.toggle('flex', showGear);
+        }
+        if (!showGear && state.isSpinning) {
+          state.isSpinning = false;
+          if (rafId) cancelAnimationFrame(rafId);
+          if (dom.btnToggleSpin) dom.btnToggleSpin.textContent = '▶ Simulasi Putar';
         }
 
         renderCanvas();
@@ -1560,7 +1764,13 @@
         bindNum('inpRimOD', (el) => { state.rimOD = Math.max(15, parseFloat(el.value) || 39.0); });
         bindNum('inpTireW', (el) => { state.tireW = Math.max(6, parseFloat(el.value) || 15.0); });
         bindNum('inpRimFlange', (el) => { state.rimFlange = Math.max(0.8, parseFloat(el.value) || 1.8); });
-        bindNum('inpRimGrooveDepth', (el) => { state.rimGrooveDepth = Math.max(0.2, parseFloat(el.value) || 1.2); });
+        bindNum('inpRimGrooveDepth', (el) => { state.rimGrooveDepth = Math.max(0.5, parseFloat(el.value) || 3.5); });
+
+        // 4 Baut Pengunci Kepingan Akrilik Velg + Base & Top Molding
+        bindNum('inpRimBoltCount', (el) => { state.rimBoltCount = Math.max(0, Math.min(8, parseInt(el.value, 10) || 0)); });
+        bindNum('selRimBoltSize', (el) => { state.rimBoltSize = el.value === 'M2' ? 'M2' : 'M3'; });
+        bindNum('inpRimBoltPcd', (el) => { state.rimBoltPcd = Math.max(8, parseFloat(el.value) || 16.0); });
+
         bindNum('selAcrylicThick', (el) => { state.acrylicThick = parseFloat(el.value) || 3; });
         bindNum('inpMoldWall', (el) => { state.moldWall = Math.max(3, parseFloat(el.value) || 6.0); });
         bindNum('inpMoldBolts', (el) => { state.moldBolts = Math.max(2, Math.min(8, parseInt(el.value, 10) || 4)); });
@@ -1569,9 +1779,9 @@
         bindNum('selRimShaft', (el) => { state.rimShaft = el.value; });
         bindNum('inpRimBore', (el) => { state.rimBore = Math.max(1, parseFloat(el.value) || 5.45); });
         bindNum('inpRimFlat', (el) => { state.rimFlat = Math.max(0.5, parseFloat(el.value) || 3.80); });
-        bindNum('inpRimPinCount', (el) => { state.rimPinCount = Math.max(0, Math.min(12, parseInt(el.value, 10) || 0)); });
+        bindNum('inpRimPinCount', (el) => { state.rimPinCount = Math.max(0, Math.min(16, parseInt(el.value, 10) || 0)); });
         bindNum('inpRimPinDia', (el) => { state.rimPinDia = Math.max(0.8, parseFloat(el.value) || 2.2); });
-        bindNum('inpRimPinPcd', (el) => { state.rimPinPcd = Math.max(6, parseFloat(el.value) || 28.0); });
+        bindNum('inpRimPinPcd', (el) => { state.rimPinPcd = Math.max(10, parseFloat(el.value) || 34.0); });
 
         // Endmill CNC
         bindNum('inpEndmillDia', (el) => { setEndmillDiameter(parseFloat(el.value) || 0); });
@@ -1700,11 +1910,14 @@
           tabCombined: document.getElementById('tabCombined'),
           panelGear: document.getElementById('panelGear'),
           panelRim: document.getElementById('panelRim'),
+          gearOnlyControls: document.getElementById('gearOnlyControls'),
           badgeGearRatio: document.getElementById('badgeGearRatio'),
           tagPinionOD: document.getElementById('tagPinionOD'),
           tagSpurOD: document.getElementById('tagSpurOD'),
           badgeTireWall: document.getElementById('badgeTireWall'),
           tagMoldOD: document.getElementById('tagMoldOD'),
+          tagRimBoltInfo: document.getElementById('tagRimBoltInfo'),
+          tagGripperPcd: document.getElementById('tagGripperPcd'),
           inpGearFlat1: document.getElementById('inpGearFlat1'),
           inpGearFlat2: document.getElementById('inpGearFlat2'),
           lblTireOD: document.getElementById('lblTireOD'),
